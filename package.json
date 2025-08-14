@@ -1,0 +1,22 @@
+{
+  "name": "investment_portafolio",
+  "version": "1.0.0",
+  "description": "Financial Portfolio",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zarahi93/Investment_Portafolio.git"
+  },
+  "author": "Adahi Gallardo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Zarahi93/Investment_Portafolio/issues"
+  },
+  "homepage": "https://github.com/Zarahi93/Investment_Portafolio#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
