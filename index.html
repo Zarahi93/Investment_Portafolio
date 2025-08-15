@@ -1,16 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SPA Example</title>
+    <title>My porfolio</title>
     <link rel="stylesheet" href="styles/main.css">
 </head>
+
 <body>
-    <div id="main">
-        <!-- This will be where the page content gets rendered -->
+    <div class="container">
+        <!-- Home Page -->
+        <div id="home" class="page active">
+            <div class="hero">
+                <h1>Welcome to My App</h1>
+                <p>This is the home page</p>
+                
+                <a href="/login">
+                    <button>Log in</button>
+                </a>
+
+            </div>
+        </div>
     </div>
-    <script src="scripts/router.js"></script>
-    <script src="scripts/main.js"></script>
+    <!-- Load JavaScript files -->
+    <script src="./scripts/pages/index.js"></script>
 </body>
+
 </html>
