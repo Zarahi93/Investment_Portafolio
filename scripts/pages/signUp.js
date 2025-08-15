@@ -1,13 +1,12 @@
 // Managing the buttons for changing pages begins ---->
-const signUp = document.getElementById("signUp");
-signUp.addEventListener("click", goToSignUp);
-const dashboard = document.getElementById("login-to-porfolio");
+const logIn = document.getElementById("signup-to-login");
+logIn.addEventListener("click", goToLogIn);
+const dashboard = document.getElementById("signup-to-porfolio");
 dashboard.addEventListener("click", goToDashboard);
 
-function goToSignUp(){
-    window.location.assign("./signUp.html");
+function goToLogIn(){
+    window.location.assign("./logIn.html");
 };
-
 
 function goToDashboard(){
     window.location.assign("./dashboard.html");
