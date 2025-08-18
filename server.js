@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const path = require('path');
 const app = express();
@@ -24,6 +23,5 @@ function startServer() {
 if (require.main === module) {
   startServer();
 }
-
 
 module.exports = {app, startServer};
