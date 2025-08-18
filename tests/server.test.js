@@ -2,11 +2,40 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const app = require('../../server.js');
+const {app, startServer} = require('../server.js');
 const { clear } = require('console');
 
 let server;
 let port;
+
+describe('startServer', () => {
+  let listenSpy;
+
+  beforeEach(() => {
+    // Mock app.listen
+    listenSpy = jest.spyOn(app, 'listen').mockImplementation((port, cb) => {
+      cb(); // immediately invoke the callback
+      return { close: jest.fn() }; // fake server object
+    });
+  });
+
+  afterEach(() => {
+    listenSpy.mockRestore();
+  });
+
+  test('should start server on default port 5000 when no env var is set', () => {
+    delete process.env.PORT; // ensure no PORT env set
+    startServer();
+    expect(listenSpy).toHaveBeenCalledWith(5000, expect.any(Function));
+  });
+
+  test('should start server on process.env.PORT if defined', () => {
+    process.env.PORT = '1234';
+    startServer();
+    expect(listenSpy).toHaveBeenCalledWith('1234', expect.any(Function));
+  });
+});
+
 
 beforeAll(done => {
     server = app.listen(0, () => {
@@ -43,21 +72,22 @@ function fetch(pathname) {
 }
 
 function getExpectedHtml(filePath) {
-    return fs.readFileSync(path.join(__dirname, '..','..', ...filePath), 'utf-8');
+    return fs.readFileSync(path.join(__dirname, '..', ...filePath), 'utf-8');
 }
 
 describe('Express routes', () => {
-    test('GET / should return index.html', async () => {
+  
+    test('GET / should return logIn.html', async () => {
         const res = await fetch('/');
         expect(res.statusCode).toBe(200);
-        const expected = getExpectedHtml(['index.html']);
+        const expected = getExpectedHtml(['html', 'logIn.html']);
         expect(res.body).toBe(expected);
     });
 
-    test('GET /login should return logIn.html', async () => {
-        const res = await fetch('/login');
+    test('GET /recover should return recoverPassword.html', async () => {
+        const res = await fetch('/recover');
         expect(res.statusCode).toBe(200);
-        const expected = getExpectedHtml(['html', 'logIn.html']);
+        const expected = getExpectedHtml(['html', 'recoverPassword.html']);
         expect(res.body).toBe(expected);
     });
 
@@ -68,14 +98,14 @@ describe('Express routes', () => {
         expect(res.body).toBe(expected);
     });
 
-    test('GET /quiz should return signUp.html', async () => {
+    test('GET /quiz should return quiz.html', async () => {
         const res = await fetch('/quiz');
         expect(res.statusCode).toBe(200);
         const expected = getExpectedHtml(['html', 'quiz.html']);
         expect(res.body).toBe(expected);
     });
 
-     test('GET /dashboard should return signUp.html', async () => {
+     test('GET /dashboard should return dashboard.html', async () => {
         const res = await fetch('/dashboard');
         expect(res.statusCode).toBe(200);
         const expected = getExpectedHtml(['html', 'dashboard.html']);
