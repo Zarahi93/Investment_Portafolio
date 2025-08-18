@@ -4,7 +4,8 @@
   "description": "Financial Portfolio",
   "main": "index.html",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -17,6 +18,11 @@
   },
   "homepage": "https://github.com/Zarahi93/Investment_Portafolio#readme",
   "dependencies": {
-    "express": "^5.1.0"
+    "D": "^1.0.0",
+    "express": "^5.1.0",
+    "jest": "^30.0.5"
+  },
+  "devDependencies": {
+    "node-mocks-http": "^1.17.2"
   }
 }
