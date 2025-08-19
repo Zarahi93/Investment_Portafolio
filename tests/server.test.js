@@ -74,7 +74,7 @@ function getExpectedHtml(filePath) {
     return fs.readFileSync(path.join(__dirname, '..', ...filePath), 'utf-8');
 }
 
-describe('Express routes', () => {
+describe('Express routes should direct to the correct pages', () => {
   
     test('GET / should return logIn.html', async () => {
         const res = await fetch('/');
