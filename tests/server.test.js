@@ -3,7 +3,6 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const {app, startServer} = require('../server.js');
-const { clear } = require('console');
 
 let server;
 let port;
@@ -84,10 +83,10 @@ describe('Express routes', () => {
         expect(res.body).toBe(expected);
     });
 
-    test('GET /recover should return recoverPassword.html', async () => {
+    test('GET /recover should return recovery.html', async () => {
         const res = await fetch('/recover');
         expect(res.statusCode).toBe(200);
-        const expected = getExpectedHtml(['html', 'recoverPassword.html']);
+        const expected = getExpectedHtml(['html', 'recovery.html']);
         expect(res.body).toBe(expected);
     });
 
