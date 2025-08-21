@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Análisis Financiero Predictivo</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --text-primary: #2d3436;
+            --text-secondary: #636e72;
+            --accent-color: #6c5ce7;
+            --border-color: #e9ecef;
+            --shadow-light: 0 2px 10px rgba(0,0,0,0.1);
+            --shadow-medium: 0 4px 20px rgba(0,0,0,0.15);
+            --success-color: #00b894;
+            --danger-color: #e17055;
+            --warning-color: #fdcb6e;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #2d3436;
+            --bg-secondary: #636e72;
+            --text-primary: #ddd;
+            --text-secondary: #b2bec3;
+            --accent-color: #a29bfe;
+            --border-color: #636e72;
+            --shadow-light: 0 2px 10px rgba(0,0,0,0.3);
+            --shadow-medium: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        [data-accessibility="true"] {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        [data-accessibility="true"] button {
+            min-height: 44px;
+            font-size: 16px;
+        }
+
+        [data-accessibility="true"] input {
+            min-height: 44px;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background: var(--bg-primary);
+            box-shadow: var(--shadow-light);
+            padding: 0 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            height: 70px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 400px;
+            margin: 0 30px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 45px 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 25px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-primary);
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-color), #fd79a8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .settings-container {
+            position: relative;
+        }
+
+        .settings-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+
+        .settings-btn:hover {
+            background: var(--bg-secondary);
+            color: var(--accent-color);
+        }
+
+        .settings-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-shadow: var(--shadow-medium);
+            min-width: 200px;
+            padding: 10px 0;
+            display: none;
+            z-index: 1002;
+        }
+
+        .settings-menu.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.2s ease;
+            color: var(--text-primary);
+        }
+
+        .menu-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .menu-separator {
+            height: 1px;
+            background: var(--border-color);
+            margin: 5px 0;
+        }
+
+        .toggle-switch {
+            width: 40px;
+            height: 20px;
+            background: var(--border-color);
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: var(--accent-color);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: left 0.3s ease;
+        }
+
+        .toggle-switch.active::after {
+            left: 22px;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            background: var(--bg-primary);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-light);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-color), #fd79a8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .analysis-container {
+            background: var(--bg-primary);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-light);
+            margin-bottom: 30px;
+        }
+
+        .analysis-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .ticker-input {
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+            width: 150px;
+        }
+
+        .ticker-input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+        }
+
+        .analyze-btn {
+            background: linear-gradient(135deg, var(--accent-color), #fd79a8);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.3);
+        }
+
+        .buy-stock-btn {
+            background: linear-gradient(135deg, var(--success-color), #00a085);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .buy-stock-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 184, 148, 0.3);
+        }
+
+        .buy-stock-btn:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #chart {
+            width: 100%;
+            height: 500px;
+            margin: 20px 0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow-light);
+        }
+
+        .results-table th {
+            background: var(--accent-color);
+            color: white;
+            padding: 15px 10px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .results-table td {
+            padding: 15px 10px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-primary);
+        }
+
+        .results-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .decision-buy { color: var(--success-color); font-weight: 600; }
+        .decision-hold { color: var(--warning-color); font-weight: 600; }
+        .decision-sell { color: var(--danger-color); font-weight: 600; }
+
+        .risk-low { color: var(--success-color); font-weight: 600; }
+        .risk-medium { color: var(--warning-color); font-weight: 600; }
+        .risk-high { color: var(--danger-color); font-weight: 600; }
+
+        /* Stock Loss Alert */
+        .stock-loss-alert {
+            background: #fff5f5;
+            border: 2px solid #fed7d7;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .stock-loss-alert.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        [data-theme="dark"] .stock-loss-alert {
+            background: #4a0e0e;
+            border-color: #c53030;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .alert-title {
+            font-weight: 600;
+            color: #c53030;
+            margin-bottom: 5px;
+        }
+
+        .alert-message {
+            color: #742a2a;
+            font-size: 14px;
+        }
+
+        [data-theme="dark"] .alert-title {
+            color: #fc8181;
+        }
+
+        [data-theme="dark"] .alert-message {
+            color: #feb2b2;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            border-radius: 20px;
+            padding: 0;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            transform: translateY(30px);
+            transition: all 0.3s ease;
+            margin: 20px 0;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--success-color), #00a085);
+            color: white;
+            padding: 25px;
+            position: relative;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .stock-info-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stock-symbol {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 5px;
+        }
+
+        .stock-price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .form-section {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .quantity-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .quantity-btn:hover {
+            background: #5a4fcf;
+            transform: scale(1.05);
+        }
+
+        .quantity-btn:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .order-summary {
+            background: linear-gradient(135deg, rgba(0, 184, 148, 0.1), rgba(0, 160, 133, 0.1));
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+
+        .summary-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+        }
+
+        .summary-row.total {
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+            margin-top: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn-secondary {
+            background: var(--border-color);
+            color: var(--text-secondary);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .btn-secondary:hover {
+            background: #c8d6e5;
+            color: var(--text-primary);
+        }
+
+        .btn-primary-modal {
+            background: linear-gradient(135deg, var(--success-color), #00a085);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary-modal:hover {
+            background: linear-gradient(135deg, #00a085, #008f75);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3);
+        }
+
+        .success-animation {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            color: var(--success-color);
+            margin-bottom: 20px;
+            animation: bounce 0.6s ease;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 53%, 80%, 100% { transform: translate3d(0,0,0); }
+            40%, 43% { transform: translate3d(0,-30px,0); }
+            70% { transform: translate3d(0,-15px,0); }
+            90% { transform: translate3d(0,-4px,0); }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-content {
+                flex-direction: column;
+                height: auto;
+                padding: 15px 0;
+            }
+
+            .search-container {
+                margin: 15px 0;
+                max-width: 100%;
+            }
+
+            .analysis-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .control-group {
+                justify-content: space-between;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 10px 0;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+       <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="#" class="logo">📊 FinAnalytics</a>
+            
+            <div class="search-container">
+                <input type="text" class="search-input" id="globalSearch" placeholder="Buscar ticker (ej: AAPL, MSFT...)">
+                <span class="search-icon">🔍</span>
+            </div>
+
+            <div class="navbar-right">
+                <div class="user-info">
+                    <div class="user-avatar">AG</div>
+                    <span>Ana García</span>
+                </div>
+                
+                <div class="settings-container">
+                    <button class="settings-btn" id="settingsBtn">⚙️</button>
+                    <div class="settings-menu" id="settingsMenu">
+                        <div class="menu-item" id="accessibilityToggle">
+                            <span>Modo Accesible</span>
+                            <div class="toggle-switch" id="accessibilitySwitch"></div>
+                        </div>
+                        <div class="menu-item" id="stockLossToggle">
+                            <span>Stock Loss</span>
+                            <div class="toggle-switch active" id="stockLossSwitch"></div>
+                        </div>
+                        <div class="menu-separator"></div>
+                        <div class="menu-item" id="logoutBtn">
+                            <span>Cerrar Sesión</span>
+                            <span>🚪</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Análisis Financiero Predictivo</h1>
+            <p class="page-subtitle">Herramienta avanzada para análisis y predicción de mercados financieros</p>
+        </div>
+
+        <div class="stock-loss-alert" id="stockLossAlert">
+            <div class="alert-title">⚠️ Alerta Stock Loss</div>
+            <div class="alert-message">Se han detectado movimientos de riesgo en el mercado. Revisa tus posiciones.</div>
+        </div>
+
+        <div class="analysis-container">
+            <div class="analysis-controls">
+                <div class="control-group">
+                    <label class="control-label" for="ticker">Ticker:</label>
+                    <input type="text" class="ticker-input" id="ticker" placeholder="Ej: AAPL">
+                </div>
+                <button class="analyze-btn" onclick="analyzeTicker()">📈 Analizar</button>
+                <button class="buy-stock-btn" id="buyStockBtn" disabled>
+                    💰 Comprar Acción
+                </button>
+            </div>
+            
+            <div id="chart"></div>
+            
+            <table class="results-table" id="resultsTable">
+                <tr>
+                    <th>Ticker</th>
+                    <th>Último cierre</th>
+                    <th>Predicción</th>
+                    <th>Decisión</th>
+                    <th>Volatilidad</th>
+                    <th>Riesgo</th>
+                </tr>
+                <tr>
+                    <td colspan="6">Sin datos aún - Ingrese un ticker y analice</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- Buy Stock Modal -->
+    <div class="modal-overlay" id="buyStockModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">💰 Comprar Acción</h2>
+                <button class="modal-close" id="closeModal">×</button>
+            </div>
+            
+            <div class="modal-body" id="modalBody">
+                <div class="stock-info-card">
+                    <div class="stock-symbol" id="modalStockSymbol">-</div>
+                    <div class="stock-price" id="modalStockPrice">$0.00</div>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">Cantidad de Acciones</label>
+                    <input type="number" class="form-input" id="stockQuantity" placeholder="1" min="1" step="1" value="1">
+                    <div class="quantity-controls">
+                        <button class="quantity-btn" id="decreaseQty">-</button>
+                        <span style="color: var(--text-secondary); font-size: 14px;">Cantidad</span>
+                        <button class="quantity-btn" id="increaseQty">+</button>
+                    </div>
+                </div>
+
+                <div class="order-summary">
+                    <div class="summary-title">
+                        📊 Resumen de la Orden
+                    </div>
+                    <div class="summary-row">
+                        <span>Precio por acción:</span>
+                        <span id="summaryPrice">$0.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Cantidad:</span>
+                        <span id="summaryQuantity">0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Comisión:</span>
+                        <span id="summaryCommission">$4.95</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total a pagar:</span>
+                        <span id="summaryTotal">$4.95</span>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="cancelOrder">Cancelar</button>
+                    <button class="btn-primary-modal" id="confirmOrder">
+                        <span>🚀</span> Confirmar Compra
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Variables globales
+        let currentAnalysis = null;
+        let isDarkMode = false;
+        let isAccessibilityMode = false;
+        let isStockLossEnabled = true;
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            showStockLossAlert();
+        });
+
+        function setupEventListeners() {
+            // Settings menu
+            const settingsBtn = document.getElementById('settingsBtn');
+            const settingsMenu = document.getElementById('settingsMenu');
+            
+            settingsBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                settingsMenu.classList.toggle('show');
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.settings-container')) {
+                    settingsMenu.classList.remove('show');
+                }
+            });
+
+            // Toggle switches
+            setupToggle('accessibilityToggle', 'accessibilitySwitch', toggleAccessibilityMode);
+            setupToggle('stockLossToggle', 'stockLossSwitch', toggleStockLoss);
+
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                    alert('Sesión cerrada correctamente');
+                    // Aquí puedes redirigir o limpiar la sesión
+                }
+            });
+
+            // Global search
+            const globalSearch = document.getElementById('globalSearch');
+            globalSearch.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const ticker = globalSearch.value.trim().toUpperCase();
+                    if (ticker) {
+                        document.getElementById('ticker').value = ticker;
+                        analyzeTicker();
+                        globalSearch.value = '';
+                    }
+                }
+            });
+
+            // Buy stock modal
+            setupBuyStockModal();
+        }
+
+        function setupToggle(itemId, switchId, callback) {
+            const item = document.getElementById(itemId);
+            const toggle = document.getElementById(switchId);
+            
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggle.classList.toggle('active');
+                callback();
+            });
+        }
+
+        function toggleAccessibilityMode() {
+            isAccessibilityMode = !isAccessibilityMode;
+            document.body.setAttribute('data-accessibility', isAccessibilityMode);
+        }
+
+        function toggleStockLoss() {
+            isStockLossEnabled = !isStockLossEnabled;
+            const alert = document.getElementById('stockLossAlert');
+            
+            if (isStockLossEnabled) {
+                alert.classList.add('show');
+            } else {
+                alert.classList.remove('show');
+            }
+        }
+
+        function showStockLossAlert() {
+            if (isStockLossEnabled) {
+                setTimeout(() => {
+                    document.getElementById('stockLossAlert').classList.add('show');
+                }, 2000);
+            }
+        }
+
+        // Buy Stock Modal Functions
+        let __originalModalBodyHTML = null;
+
+// Buy Stock Modal Functions
+function setupBuyStockModal() {
+  const buyBtn = document.getElementById('buyStockBtn');
+  const modal = document.getElementById('buyStockModal');
+  const closeBtn = document.getElementById('closeModal');
+  const cancelBtn = document.getElementById('cancelOrder');
+  const confirmBtn = document.getElementById('confirmOrder');
+
+  // Guardar contenido original del body del modal para restaurarlo al cerrar
+  const modalBodyEl = document.getElementById('modalBody');
+  if (modalBodyEl && __originalModalBodyHTML === null) {
+    __originalModalBodyHTML = modalBodyEl.innerHTML;
+  }
+
+  // Quantity controls
+  const quantityInput = document.getElementById('stockQuantity');
+  const increaseBtn = document.getElementById('increaseQty');
+  const decreaseBtn = document.getElementById('decreaseQty');
+
+  if (increaseBtn) {
+    increaseBtn.addEventListener('click', () => {
+      const current = parseInt(quantityInput.value) || 1;
+      quantityInput.value = current + 1;
+      updateOrderSummary();
+    });
+  }
+
+  if (decreaseBtn) {
+    decreaseBtn.addEventListener('click', () => {
+      const current = parseInt(quantityInput.value) || 1;
+      if (current > 1) {
+        quantityInput.value = current - 1;
+        updateOrderSummary();
+      }
+    });
+  }
+
+  if (quantityInput) {
+    quantityInput.addEventListener('input', updateOrderSummary);
+  }
+
+  // Modal controls
+  if (buyBtn) buyBtn.addEventListener('click', openBuyModal);
+  if (closeBtn) closeBtn.addEventListener('click', closeBuyModal);
+  if (cancelBtn) cancelBtn.addEventListener('click', closeBuyModal);
+  if (confirmBtn) confirmBtn.addEventListener('click', confirmPurchase);
+
+  // Close modal when clicking overlay
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeBuyModal();
+    });
+  }
+}
+
+// Heurística para validar que el análisis es usable y no es un error de token
+function __isValidAnalysis(a) {
+  if (!a || typeof a !== 'object') return false;
+
+  // Si el backend regresó marca de error/status
+  if (a.error || a.code === 401 || a.status === 401) return false;
+
+  const msg = String(a.message || a.detail || '').toLowerCase();
+  if (msg.includes('token')) return false;
+
+  // Campos mínimos requeridos
+  if (!a.ticker) return false;
+
+  const price = parseFloat(a.ultimo_cierre);
+  if (!Number.isFinite(price)) return false;
+
+  return true;
+}
+
+function openBuyModal() {
+  if (!currentAnalysis) {
+    alert('Primero debe analizar un ticker');
+    return;
+  }
+
+  // Validar token/datos aunque “venga algo”
+  if (!__isValidAnalysis(currentAnalysis)) {
+    alert('Token inválido o datos no disponibles.');
+    return;
+  }
+
+  // Llenar modal
+  updateModalContent();
+  document.getElementById('buyStockModal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+
+  setTimeout(() => {
+    document.getElementById('buyStockModal').scrollTop = 0;
+  }, 100);
+}
+
+function closeBuyModal() {
+  const modal = document.getElementById('buyStockModal');
+  if (modal) modal.classList.remove('show');
+  document.body.style.overflow = 'auto';
+
+  // Reset form
+  const qty = document.getElementById('stockQuantity');
+  if (qty) qty.value = '1';
+
+  // Restaurar contenido original del modal si se mostró la animación de éxito
+  const modalBodyEl = document.getElementById('modalBody');
+  if (modalBodyEl && __originalModalBodyHTML !== null) {
+    modalBodyEl.innerHTML = __originalModalBodyHTML;
+  }
+}
+
+function updateModalContent() {
+  if (!currentAnalysis) return;
+
+  // Validación extra por si algo cambió
+  if (!__isValidAnalysis(currentAnalysis)) {
+    alert('Token inválido o datos no disponibles.');
+    return;
+  }
+
+  const price = parseFloat(currentAnalysis.ultimo_cierre);
+
+  document.getElementById('modalStockSymbol').textContent = currentAnalysis.ticker;
+  document.getElementById('modalStockPrice').textContent = Number.isFinite(price)
+    ? price.toFixed(2)
+    : '—';
+
+  updateOrderSummary();
+}
+
+function updateOrderSummary() {
+  if (!currentAnalysis) return;
+
+  const price = parseFloat(currentAnalysis.ultimo_cierre);
+  if (!Number.isFinite(price)) {
+    // Si el precio no es válido, asumimos token/datos inválidos
+    alert('Token inválido o datos no disponibles.');
+    return;
+  }
+
+  const quantity = parseInt(document.getElementById('stockQuantity').value) || 1;
+  const commission = 4.95;
+  const subtotal = price * quantity;
+  const total = subtotal + commission;
+
+  document.getElementById('summaryPrice').textContent = price.toFixed(2);
+  document.getElementById('summaryQuantity').textContent = String(quantity);
+  document.getElementById('summaryCommission').textContent = commission.toFixed(2);
+  document.getElementById('summaryTotal').textContent = total.toFixed(2);
+}
+
+function confirmPurchase() {
+  const quantity = parseInt(document.getElementById('stockQuantity').value) || 1;
+
+  // Si algo está mal al confirmar, evita mostrar éxito
+  if (!__isValidAnalysis(currentAnalysis)) {
+    alert('Token inválido o datos no disponibles.');
+    return;
+  }
+
+  const modalBody = document.getElementById('modalBody');
+  modalBody.innerHTML = `
+    <div class="success-animation">
+      <div class="success-icon">✅</div>
+      <h3 style="color: var(--text-primary); margin-bottom: 10px;">¡Compra Realizada!</h3>
+      <p style="color: var(--text-secondary); margin-bottom: 20px;">
+        Has comprado exitosamente ${quantity} ${quantity === 1 ? 'acción' : 'acciones'} de ${currentAnalysis.ticker}
+      </p>
+      <div style="background: var(--bg-secondary); padding: 15px; border-radius: 10px; margin: 20px 0;">
+        <strong>Detalles de la transacción:</strong><br>
+        <small style="color: var(--text-secondary);">
+          Orden #${Math.random().toString(36).substr(2, 9).toUpperCase()}<br>
+          Precio: ${parseFloat(currentAnalysis.ultimo_cierre).toFixed(2)} por acción<br>
+          Fecha: ${new Date().toLocaleString()}
+        </small>
+      </div>
+      <button class="btn-primary-modal" onclick="closeBuyModal()" style="width: 100%;">Continuar</button>
+    </div>
+  `;
+
+  setTimeout(() => closeBuyModal(), 3000);
+}
+
+
+        // Análisis de ticker
+        async function analyzeTicker() {
+    const ticker = document.getElementById("ticker").value.toUpperCase().trim();
+    if (!ticker) {
+        alert("Por favor, ingrese un ticker válido");
+        return;
+    }
+
+    // Deshabilitar botón mientras se procesa
+    const analyzeBtn = document.querySelector('.analyze-btn');
+    const buyBtn = document.getElementById('buyStockBtn');
+    analyzeBtn.disabled = true;
+    analyzeBtn.textContent = '🔄 Analizando...';
+    buyBtn.disabled = true;
+
+    try {
+        const response = await fetch("/analyze", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ticker })
+        });
+
+        // Leer la respuesta como texto primero
+        const text = await response.text();
+        let result;
+        try {
+            result = JSON.parse(text);
+        } catch {
+            return alert("Respuesta inválida del servidor:\n" + text);
+        }
+
+        // Revisar errores HTTP
+        if (!response.ok) {
+            return alert("Error al analizar: " + (result.error || response.statusText));
+        }
+
+        // Revisar error en el JSON
+        if (result.error) return alert("Error: " + result.error);
+
+        // Actualizar tabla y gráfico
+        currentAnalysis = result;
+        updateResultsTable(result);
+        createChart(result);
+
+        // Habilitar botón de compra
+        buyBtn.disabled = false;
+
+    } catch (error) {
+        alert("Error de conexión con el servidor: " + error.message);
+    } finally {
+        // Rehabilitar botón de análisis
+        analyzeBtn.disabled = false;
+        analyzeBtn.textContent = '📈 Analizar';
+    }
+}
+
+
+
+        function updateResultsTable(result) {
+            const table = document.getElementById("resultsTable");
+            
+            let decisionClass = '';
+            let riskClass = '';
+            
+            if (result.decision === 'Comprar') decisionClass = 'decision-buy';
+            else if (result.decision === 'Mantener') decisionClass = 'decision-hold';
+            else decisionClass = 'decision-sell';
+            
+            if (result.riesgo === 'Bajo') riskClass = 'risk-low';
+            else if (result.riesgo === 'Medio') riskClass = 'risk-medium';
+            else riskClass = 'risk-high';
+            
+            table.innerHTML = `
+                <tr>
+                    <th>Ticker</th>
+                    <th>Último cierre</th>
+                    <th>Predicción</th>
+                    <th>Decisión</th>
+                    <th>Volatilidad</th>
+                    <th>Riesgo</th>
+                </tr>
+                <tr>
+                    <td><strong>${result.ticker}</strong></td>
+                    <td>${result.ultimo_cierre}</td>
+                    <td>${result.prediccion}</td>
+                    <td class="${decisionClass}">${result.decision}</td>
+                    <td>${(parseFloat(result.volatilidad) * 100).toFixed(2)}%</td>
+                    <td class="${riskClass}">${result.riesgo}</td>
+                </tr>
+            `;
+        }
+
+        function createChart(result) {
+            const ohlc = result.ohlc;
+            
+            const trace = {
+                x: ohlc.map(d => d.date),
+                open: ohlc.map(d => d.open),
+                high: ohlc.map(d => d.high),
+                low: ohlc.map(d => d.low),
+                close: ohlc.map(d => d.close),
+                type: 'candlestick',
+                name: result.ticker,
+                increasing: {line: {color: '#00b894'}},
+                decreasing: {line: {color: '#e17055'}}
+            };
+            
+            const layout = {
+                title: {
+                    text: `Gráfica de velas: ${result.ticker}`,
+                    font: {
+                        size: 18,
+                        color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim()
+                    }
+                },
+                xaxis: {
+                    title: "Fecha",
+                    color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim()
+                },
+                yaxis: {
+                    title: "Precio ($)",
+                    color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim()
+                },
+                plot_bgcolor: getComputedStyle(document.documentElement).getPropertyValue('--bg-primary').trim(),
+                paper_bgcolor: getComputedStyle(document.documentElement).getPropertyValue('--bg-primary').trim(),
+                font: {
+                    color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim()
+                },
+                margin: {
+                    l: 60,
+                    r: 60,
+                    t: 60,
+                    b: 60
+                }
+            };
+            
+            const config = {
+                responsive: true,
+                displayModeBar: true,
+                modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d'],
+                displaylogo: false
+            };
+            
+            Plotly.newPlot('chart', [trace], layout, config);
+        }
+
+        // Permitir Enter en el campo ticker
+        document.getElementById('ticker').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                analyzeTicker();
+            }
+        });
+    </script>
+</body>
+</html>
+
