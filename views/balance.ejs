@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantia - Deposits and Withdrawals</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00d4ff, #4a90e2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-menu a.active,
+        .nav-menu a:hover {
+            color: #00d4ff;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(45deg, #00d4ff, #4a90e2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .page-title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #00d4ff, #4a90e2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        .balance-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .balance-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .balance-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .balance-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .balance-amount {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .balance-change {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .positive {
+            color: #00ff88;
+        }
+
+        .negative {
+            color: #ff4757;
+        }
+
+        .neutral {
+            color: #00d4ff;
+        }
+
+        .transaction-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .transaction-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .transaction-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .transaction-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .deposit-icon {
+            background: linear-gradient(45deg, #00ff88, #00d4ff);
+        }
+
+        .withdraw-icon {
+            background: linear-gradient(45deg, #ff4757, #ff6b6b);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #00d4ff;
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+        }
+
+        .form-select option {
+            background: #1a1a2e;
+            color: #fff;
+            padding: 10px;
+        }
+
+        .amount-shortcuts {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .amount-btn {
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .amount-btn:hover {
+            background: linear-gradient(45deg, #00d4ff, #4a90e2);
+            color: white;
+            border-color: transparent;
+        }
+
+        .transaction-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .deposit-btn {
+            background: linear-gradient(45deg, #00ff88, #00d4ff);
+            color: white;
+        }
+
+        .withdraw-btn {
+            background: linear-gradient(45deg, #ff4757, #ff6b6b);
+            color: white;
+        }
+
+        .transaction-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .transaction-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .recent-transactions {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .transaction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .transaction-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .transaction-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .transaction-type-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .transaction-details h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .transaction-details p {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .transaction-amount {
+            text-align: right;
+        }
+
+        .transaction-amount .amount {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .transaction-amount .status {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .status-completed {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+
+        .status-pending {
+            background: rgba(255, 179, 71, 0.2);
+            color: #ffb347;
+        }
+
+        .status-failed {
+            background: rgba(255, 71, 87, 0.2);
+            color: #ff4757;
+        }
+
+        @media (max-width: 768px) {
+            .transaction-section {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .amount-shortcuts {
+                justify-content: center;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="/styles/menu.css">
+</head>
+
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo"><a href="/">Quantia</a></div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="/market">Market</a></li>
+                    <li><a href="/balance" class="active">Balance</a></li>
+                    <li><a href="/port-selector">Portfolio</a></li>
+                    <li><a href="/analyse">Analyze</a></li>
+                </ul>
+            </nav>
+            <div class="user-profile" onclick="toggleUserMenu(event)">
+                <div class="user-avatar" id="userAvatar">
+                    <%= user.username ? user.username.substring(0, 2).toUpperCase() : 'US' %>
+                </div>
+                <span id="usernameDisplay">
+                    <%= user.username || 'User' %>
+                </span>
+
+                <!-- Dropdown menu -->
+                <div class="dropdown-menu" id="userDropdown">
+                    <div class="menu-header">
+                        <div class="avatar">
+                            <%= user.username ? user.username.substring(0, 2).toUpperCase() : 'US' %>
+                        </div>
+                        <h3>
+                            <%= user.username || 'User' %>
+                        </h3>
+                        <p>
+                            <%= user.email || 'user@email.com' %>
+                        </p>
+                    </div>
+
+                    <div class="menu-items">
+                        <div class="menu-item" onclick="handleMenuClick('profile')">
+                            <span>👤</span>
+                            View Profile
+                        </div>
+
+                        <div class="menu-item" onclick="handleMenuClick('settings')">
+                            <span>⚙️</span>
+                            Settings
+                        </div>
+
+                        <div class="menu-item" onclick="handleMenuClick('help')">
+                            <span>❓</span>
+                            Help
+                        </div>
+
+                        <div class="menu-divider"></div>
+
+                        <div class="menu-item logout" onclick="handleMenuClick('logout')">
+                            <span>🚪</span>
+                            Log Out
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <h1 class="page-title">Account Management</h1>
+        <p class="page-subtitle">Make deposits and withdrawals from your investment account</p>
+
+        <!-- Balance section -->
+        <section class="balance-section">
+            <div class="balance-card">
+                <div class="balance-label">Available Balance</div>
+                <div class="balance-amount neutral" id="balanceAmount">$0.00</div>
+                <div class="balance-change neutral" id="balanceStatus">Loading...</div>
+            </div>
+        </section>
+
+        <!-- Transactions section -->
+        <section class="transaction-section">
+            <!-- Deposit -->
+            <div class="transaction-card">
+                <div class="transaction-title">
+                    <div class="transaction-icon deposit-icon">💰</div>
+                    Deposit Funds
+                </div>
+                <form id="depositForm">
+                    <div class="form-group">
+                        <label class="form-label" for="depositAmount">Amount to deposit</label>
+                        <input type="number" id="depositAmount" class="form-input" placeholder="$0.00" min="1"
+                            step="0.01">
+                        <div class="amount-shortcuts">
+                            <button type="button" class="amount-btn"
+                                onclick="setAmount('deposit', 1000)">$1,000</button>
+                            <button type="button" class="amount-btn"
+                                onclick="setAmount('deposit', 5000)">$5,000</button>
+                            <button type="button" class="amount-btn"
+                                onclick="setAmount('deposit', 10000)">$10,000</button>
+                            <button type="button" class="amount-btn"
+                                onclick="setAmount('deposit', 25000)">$25,000</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="depositMethod">Payment method</label>
+                        <select id="depositMethod" class="form-select">
+                            <option value="">Select method</option>
+                            <option value="bank">Bank transfer</option>
+                            <option value="card">Debit card</option>
+                            <option value="crypto">Cryptocurrency</option>
+                            <option value="paypal">PayPal</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="transaction-btn deposit-btn" id="depositBtn">Deposit Funds</button>
+                </form>
+            </div>
+
+            <!-- Withdraw -->
+            <div class="transaction-card">
+                <div class="transaction-title">
+                    <div class="transaction-icon withdraw-icon">💸</div>
+                    Withdraw Funds
+                </div>
+                <form id="withdrawForm">
+                    <div class="form-group">
+                        <label class="form-label" for="withdrawAmount">Amount to withdraw</label>
+                        <input type="number" id="withdrawAmount" class="form-input" placeholder="$0.00" min="1"
+                            step="0.01">
+                        <div class="amount-shortcuts">
+                            <button type="button" class="amount-btn"
+                                onclick="setAmount('withdraw', 1000)">$1,000</button>
+                            <button type="button" class="amount-btn"
+                                onclick="setAmount('withdraw', 5000)">$5,000</button>
+                            <button type="button" class="amount-btn"
+                                onclick="setAmount('withdraw', 10000)">$10,000</button>
+                            <button type="button" class="amount-btn" onclick="setMaxWithdraw()">All</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="withdrawMethod">Withdrawal method</label>
+                        <select id="withdrawMethod" class="form-select">
+                            <option value="">Select method</option>
+                            <option value="bank">Bank transfer</option>
+                            <option value="crypto">Cryptocurrency</option>
+                            <option value="paypal">PayPal</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="transaction-btn withdraw-btn" id="withdrawBtn">Withdraw Funds</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Recent transactions -->
+        <section class="recent-transactions">
+            <h2 class="section-title">Recent Transactions</h2>
+            <div class="transaction-list" id="transactionList">
+                <!-- Transactions will be loaded dynamically here -->
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Global variables
+        let currentUser = <% - JSON.stringify(user || null) %>;
+        console.log(currentUser);
+        let currentBalance = 0;
+        let transactions = [];
+
+        // Initialization when page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Simulate logged in user (in a real app this would come from the session)
+
+            // Load user data
+            await loadUserData();
+
+            // Set up event listeners
+            setupEventListeners();
+        });
+
+        async function loadUserData() {
+            try {
+                // Load user data
+                const [userResponse, transactionsResponse] = await Promise.all([
+                    fetch(`/db/user/${currentUser.id}`),
+                    fetch(`/db/transactions/${currentUser.id}?limit=10`)
+                ]);
+
+                if (!userResponse.ok || !transactionsResponse.ok) {
+                    throw new Error(userResponse.ok ? 'Error loading transactions' : 'Error loading user data');
+                }
+
+                const userData = await userResponse.json();
+                const transactionsData = await transactionsResponse.json();
+
+                currentBalance = parseFloat(userData.data?.balance) || 0;
+                transactions = transactionsData.data || [];
+
+                // Update UI
+                document.getElementById('balanceAmount').textContent = `$${currentBalance.toFixed(2)}`;
+                document.getElementById('balanceStatus').textContent = currentBalance > 0 ? 'Ready to invest' : 'No funds available';
+                renderTransactions();
+
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('balanceStatus').textContent = 'Error loading data';
+                document.getElementById('transactionList').innerHTML = `
+            <p style="color: #ff4757; text-align: center;">
+                Error loading transactions: ${error.message}
+            </p>
+        `;
+            }
+        }
+
+        function formatMySQLDate(mysqlDate) {
+            if (!mysqlDate) return 'Date not available';
+            // Replace space with 'T' and add 'Z' for UTC timezone
+            const isoDate = mysqlDate.replace(' ', 'T') + 'Z';
+            const date = new Date(isoDate);
+
+            if (isNaN(date.getTime())) {
+                console.error('Invalid date:', mysqlDate);
+                return 'Invalid date';
+            }
+
+            // Format options for English
+            const options = {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZone: 'UTC' // Optional: keep in UTC or use Intl for automatic conversion
+            };
+
+            return date.toLocaleString('en-US', options);
+        }
+
+        // Render transactions
+        function renderTransactions() {
+            const container = document.getElementById('transactionList');
+            container.innerHTML = '';
+
+            if (transactions.length === 0) {
+                container.innerHTML = '<p style="color: rgba(255,255,255,0.5); text-align: center;">No recent transactions</p>';
+                return;
+            }
+
+            transactions.slice(0, 10).forEach(transaction => {
+                const transactionItem = document.createElement('div');
+                transactionItem.className = 'transaction-item';
+
+                const isDeposit = transaction.type === 'deposit';
+                const date = formatMySQLDate(transaction.date)
+
+                transactionItem.innerHTML = `
+                    <div class="transaction-info">
+                        <div class="transaction-type-icon ${isDeposit ? 'deposit-icon' : 'withdraw-icon'}">
+                            ${isDeposit ? '↗️' : '↙️'}
+                        </div>
+                        <div class="transaction-details">
+                            <h4>${isDeposit ? 'Deposit' : 'Withdrawal'} - ${getMethodName(transaction.description)}</h4>
+                            <p>${transaction.description}</p>
+                        </div>
+                    </div>
+                    <div class="transaction-amount">
+                        <div class="amount ${isDeposit ? 'positive' : 'negative'}">
+                            ${isDeposit ? '+' : '-'}$${transaction.amount.toFixed(2)}
+                        </div>
+                        <div class="status status-${transaction.status}">
+                            ${getStatusName(transaction.status)}
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(transactionItem);
+            });
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Deposit form
+            document.getElementById('depositForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const amount = parseFloat(document.getElementById('depositAmount').value);
+                const method = document.getElementById('depositMethod').value;
+
+                if (!amount || !method) {
+                    alert('Please complete all fields');
+                    return;
+                }
+
+                if (amount < 1) {
+
+                    alert('Minimum amount is $1.00');
+
+                    return;
+                }
+
+                try {
+                    // Disable button during processing
+                    const depositBtn = document.getElementById('depositBtn');
+                    depositBtn.disabled = true;
+                    depositBtn.textContent = 'Processing...';
+
+                    // Send request to endpoint
+                    const response = await fetch('/db/deposit', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            userId: currentUser.id,
+                            amount: amount,
+                            description: `Deposit via ${method}`
+                        })
+                    });
+
+                    if (!response.ok) throw new Error('Deposit error');
+
+                    const result = await response.json();
+
+                    // Update UI
+                    await loadUserData();
+                    alert(`Deposit of $${amount.toFixed(2)} successful`);
+                    // Reset form
+                    document.getElementById('depositForm').reset();
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert(`Error processing deposit: ${error.message}`);
+                } finally {
+                    const depositBtn = document.getElementById('depositBtn');
+                    depositBtn.disabled = false;
+                    depositBtn.textContent = 'Deposit Funds';
+                }
+            });
+
+            // Withdrawal form
+            document.getElementById('withdrawForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const amount = parseFloat(document.getElementById('withdrawAmount').value);
+                const method = document.getElementById('withdrawMethod').value;
+
+                if (!amount || !method) {
+                    alert('Please complete all fields');
+                    return;
+                }
+
+                if (amount < 1) {
+                    alert('Minimum amount is $1.00');
+                    return;
+                }
+
+                if (amount > currentBalance) {
+                    alert(`Insufficient funds. Maximum: $${currentBalance.toFixed(2)}`);
+                    return;
+                }
+
+                try {
+                    // Disable button during processing
+                    const withdrawBtn = document.getElementById('withdrawBtn');
+                    withdrawBtn.disabled = true;
+                    withdrawBtn.textContent = 'Processing...';
+
+                    // Send request to endpoint
+                    const response = await fetch('/db/withdrawal', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            userId: currentUser.id,
+                            amount: amount,
+                            description: `Withdrawal via ${method}`
+                        })
+                    });
+
+                    if (!response.ok) throw new Error('Withdrawal error');
+
+                    const result = await response.json();
+
+                    // Update UI
+                    await loadUserData();
+                    alert(`Withdrawal of $${amount.toFixed(2)} successful`);
+                    // Reset form
+                    document.getElementById('withdrawForm').reset();
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert(`Error processing withdrawal: ${error.message}`);
+                } finally {
+                    const withdrawBtn = document.getElementById('withdrawBtn');
+                    withdrawBtn.disabled = false;
+                    withdrawBtn.textContent = 'Withdraw Funds';
+                }
+            });
+
+            // Real-time validation for withdrawals
+            document.getElementById('withdrawAmount').addEventListener('input', function (e) {
+                const currentAmount = parseFloat(e.target.value) || 0;
+                const submitBtn = document.getElementById('withdrawBtn');
+
+                if (currentAmount > currentBalance) {
+                    e.target.style.borderColor = '#ff4757';
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Insufficient funds';
+                } else {
+                    e.target.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Withdraw Funds';
+                }
+            });
+        }
+
+        // Helper functions
+        function setAmount(type, amount) {
+            const input = document.getElementById(type + 'Amount');
+            input.value = amount;
+            input.focus();
+        }
+
+        function setMaxWithdraw() {
+            const input = document.getElementById('withdrawAmount');
+            input.value = currentBalance.toFixed(2);
+            input.focus();
+        }
+
+        function getMethodName(description) {
+            if (description.includes('bank')) return 'Bank transfer';
+            if (description.includes('card')) return 'Debit card';
+            if (description.includes('crypto')) return 'Cryptocurrency';
+            if (description.includes('paypal')) return 'PayPal';
+            return description || 'Other method';
+        }
+
+        function getStatusName(status) {
+            const statusMap = {
+                'completed': 'Completed',
+                'pending': 'Pending',
+                'failed': 'Failed'
+            };
+            return statusMap[status] || status;
+        }
+    </script>
+
+    <script src="/scripts/menu.js"></script>
+</body>
+
+</html>

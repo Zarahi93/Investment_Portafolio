@@ -1,28 +1,29 @@
 {
-  "name": "investment_portafolio",
+  "name": "quantia",
   "version": "1.0.0",
-  "description": "Financial Portfolio",
-  "main": "index.html",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "test": "jest --coverage"
+    "test": "jest tests/db-connection.test.js",
+    "test:watch": "jest tests/db-connection.test.js --watch",
+    "test:coverage": "jest tests/db-connection.test.js --coverage"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Zarahi93/Investment_Portafolio.git"
-  },
-  "author": "Adahi Gallardo",
+  "keywords": [],
+  "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Zarahi93/Investment_Portafolio/issues"
-  },
-  "homepage": "https://github.com/Zarahi93/Investment_Portafolio#readme",
   "dependencies": {
-    "D": "^1.0.0",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "ejs": "^3.1.10",
     "express": "^5.1.0",
-    "jest": "^30.0.5"
+    "express-session": "^1.18.2",
+    "path": "^0.12.7",
+    "url": "^0.11.4",
+    "yahoo-finance2": "^2.13.3"
   },
   "devDependencies": {
-    "node-mocks-http": "^1.17.2"
+    "jest": "^30.0.5",
+    "mysql2": "^3.14.3",
+    "supertest": "^7.1.4"
   }
 }

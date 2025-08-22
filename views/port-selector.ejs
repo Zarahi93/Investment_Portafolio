@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e293b;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .loading {
+            background: #334155;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border: 1px solid #475569;
+        }
+
+        .loading p {
+            color: #cbd5e1;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #475569;
+            border-top: 4px solid #38bdf8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #334155;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border: 1px solid #475569;
+        }
+
+        .error-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ef4444;
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .portfolios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .portfolio-card {
+            background: #334155;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #475569;
+        }
+
+        .portfolio-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #38bdf8;
+        }
+
+        .portfolio-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            background: #3f4c63;
+        }
+
+        .portfolio-card:active {
+            transform: translateY(-4px);
+        }
+
+        .portfolio-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .portfolio-icon {
+            width: 50px;
+            height: 50px;
+            background: #38bdf8;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-right: 15px;
+            color: white;
+        }
+
+        .portfolio-info {
+            flex: 1;
+        }
+
+        .portfolio-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 5px;
+        }
+
+        .portfolio-description {
+            font-size: 14px;
+            color: #94a3b8;
+            opacity: 0.9;
+        }
+
+        .portfolio-stats {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+            padding: 15px;
+            background: #475569;
+            border-radius: 10px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #38bdf8;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .select-button {
+            width: 100%;
+            background: #38bdf8;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .select-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(56, 189, 248, 0.4);
+            background: #0284c7;
+        }
+
+        .select-button:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px auto;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .portfolios-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .portfolio-stats {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💼 Select Portfolio</h1>
+            <p>Choose the portfolio you want to work with</p>
+        </div>
+        
+        <div id="content">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading portfolios...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let portfolios = [];
+        let currentUser = <%- JSON.stringify(user || null) %>;
+        const userId = currentUser.id;
+
+        async function fetchPortfolios() {
+            try {
+                const response = await fetch(`/db/portfolios/${userId}`);
+                
+                if (!response.ok) {
+                    throw new Error('Error ' + response.status + ': Could not connect to the server');
+                }
+                
+                const result = await response.json();
+                
+                if (result.success && result.data.portfolios) {
+                    portfolios = result.data.portfolios;
+                    renderPortfolioCards();
+                } else {
+                    throw new Error('Invalid data format in server response');
+                }
+            } catch (error) {
+                renderError(error.message);
+            }
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(amount);
+        }
+
+        function getPortfolioIcon(name) {
+            const icons = {
+                'main': '🏛️',
+                'principal': '🏛️',
+                'crypto': '₿',
+                'stocks': '📈',
+                'acciones': '📈',
+                'bonds': '📊',
+                'bonos': '📊',
+                'emergency': '🚨',
+                'emergencia': '🚨',
+                'savings': '💰',
+                'ahorro': '💰'
+            };
+            
+            const key = name.toLowerCase();
+            for (let icon in icons) {
+                if (key.includes(icon)) {
+                    return icons[icon];
+                }
+            }
+            return '💼';
+        }
+
+        function renderError(message) {
+            document.getElementById('content').innerHTML = 
+                '<div class="error">' +
+                    '<div class="error-icon">⚠️</div>' +
+                    '<div class="error-title">Error loading portfolios</div>' +
+                    '<div class="error-message">' + message + '</div>' +
+                '</div>';
+        }
+
+        function renderPortfolioCards() {
+            const content = document.getElementById('content');
+            let cardsHTML = '<div class="portfolios-grid">';
+            
+            for (let i = 0; i < portfolios.length; i++) {
+                const portfolio = portfolios[i];
+                const icon = getPortfolioIcon(portfolio.name);
+                
+                cardsHTML += 
+                    '<div class="portfolio-card" onclick="selectPortfolio(' + portfolio.portfolio_id + ')">' +
+                        '<div class="portfolio-header">' +
+                            '<div class="portfolio-icon">' + icon + '</div>' +
+                            '<div class="portfolio-info">' +
+                                '<div class="portfolio-name">' + portfolio.name + '</div>' +
+                                '<div class="portfolio-description">' + portfolio.description + '</div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="portfolio-stats">' +
+                            '<div class="stat-item">' +
+                                '<div class="stat-value">' + portfolio.assets_count + '</div>' +
+                                '<div class="stat-label">Assets</div>' +
+                            '</div>' +
+                            '<div class="stat-item">' +
+                                '<div class="stat-value">' + formatCurrency(portfolio.total_invested) + '</div>' +
+                                '<div class="stat-label">Invested</div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<button class="select-button">Select Portfolio</button>' +
+                    '</div>';
+            }
+            
+            cardsHTML += '</div>';
+            content.innerHTML = cardsHTML;
+        }
+
+        function selectPortfolio(portfolioId) {
+            // Here you can change the URL to where you want to redirect
+            // For example, if you want to go to a portfolio details page:
+            const redirectUrl = '/portfolio/assets/' + portfolioId;
+            
+            // Or if you want to pass the ID as a parameter:
+            // const redirectUrl = '/dashboard?portfolio=' + portfolioId;
+            
+            // Show confirmation message before redirecting (optional)
+            const selectedPortfolio = portfolios.find(p => p.portfolio_id === portfolioId);
+            if (selectedPortfolio) {
+                console.log('Redirecting to:', redirectUrl);
+                console.log('Selected portfolio:', selectedPortfolio.name);
+                
+                // Redirect (uncomment the line you prefer):
+                window.location.href = redirectUrl;
+                // window.open(redirectUrl, '_blank'); // To open in a new tab
+            }
+        }
+
+        // Initialize the application
+        fetchPortfolios();
+    </script>
+</body>
+</html>

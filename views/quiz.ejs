@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investor Profile Assessment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #00ff88, #00d4ff, #4a90e2, #ff4757);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #4a90e2);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .question-container {
+            margin: 30px 0;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-number {
+            color: #00d4ff;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 24px;
+            color: #fff;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        .option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .option:hover {
+            border-color: #00d4ff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .option:hover::before {
+            left: 100%;
+        }
+
+        .option.selected {
+            border-color: #00d4ff;
+            background: linear-gradient(135deg, #00d4ff, #4a90e2);
+            color: white;
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.4);
+        }
+
+        .option-text {
+            font-size: 16px;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+
+        .buttons {
+            margin-top: 40px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #00d4ff, #4a90e2);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(0, 212, 255, 0.5);
+        }
+
+        .result-container {
+            display: none;
+            text-align: center;
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .result-icon {
+            font-size: 80px;
+            margin: 20px 0;
+        }
+
+        .result-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #00d4ff, #4a90e2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .result-description {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .risk-low {
+            color: #00ff88;
+        }
+
+        .risk-medium {
+            color: #ffb347;
+        }
+
+        .risk-high {
+            color: #ff4757;
+        }
+
+        .score-display {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        /* Decorative floating elements */
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, rgba(0, 212, 255, 0.1), rgba(74, 144, 226, 0.1));
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); }
+            100% { transform: translateY(-100px) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="color: #ffffff; margin-bottom: 10px; font-size: 28px;">Investor Profile Assessment</h1>
+        <p style="color: #b7b7b7; margin-bottom: 20px;">Discover your financial risk tolerance</p>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progressBar"></div>
+        </div>
+
+        <div id="quizContainer">
+            <div class="question-container" id="questionContainer">
+                <div class="question-number" id="questionNumber">Question 1 of 8</div>
+                <div class="question-text" id="questionText"></div>
+                <div class="options" id="optionsContainer"></div>
+            </div>
+            
+            <div class="buttons">
+                <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()" style="display: none;">Previous</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Next</button>
+            </div>
+        </div>
+
+        <div class="result-container" id="resultContainer">
+            <div class="result-icon" id="resultIcon"></div>
+            <div class="result-title" id="resultTitle"></div>
+            <div class="score-display" id="scoreDisplay"></div>
+            <div class="result-description" id="resultDescription"></div>
+            <button class="btn btn-primary" onclick="restartQuiz()">Take Test Again</button>
+            <a class="btn btn-primary" href="/">Continue</a>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                text: "What is your main objective when investing?",
+                options: [
+                    { text: "Preserve my capital without losses", score: 1 },
+                    { text: "Generate stable income with little growth", score: 2 },
+                    { text: "Balance growth and stability", score: 3 },
+                    { text: "Maximize long-term growth", score: 4 }
+                ]
+            },
+            {
+                text: "If your investment loses 20% of its value in a month, what would you do?",
+                options: [
+                    { text: "Sell immediately to avoid further losses", score: 1 },
+                    { text: "Hold and wait for it to recover", score: 2 },
+                    { text: "Hold and invest a little more", score: 3 },
+                    { text: "Invest significantly more taking advantage of the low price", score: 4 }
+                ]
+            },
+            {
+                text: "How long do you plan to hold your investments?",
+                options: [
+                    { text: "Less than 2 years", score: 1 },
+                    { text: "2 to 5 years", score: 2 },
+                    { text: "5 to 10 years", score: 3 },
+                    { text: "More than 10 years", score: 4 }
+                ]
+            },
+            {
+                text: "What is your experience with investments?",
+                options: [
+                    { text: "None, I'm a beginner", score: 1 },
+                    { text: "Limited, some basic investments", score: 2 },
+                    { text: "Moderate, diverse investments", score: 3 },
+                    { text: "Extensive, experienced investor", score: 4 }
+                ]
+            },
+            {
+                text: "What percentage of your income can you allocate to investments?",
+                options: [
+                    { text: "Less than 5%", score: 1 },
+                    { text: "5% - 15%", score: 2 },
+                    { text: "15% - 25%", score: 3 },
+                    { text: "More than 25%", score: 4 }
+                ]
+            },
+            {
+                text: "How would you react if your investments had high volatility?",
+                options: [
+                    { text: "I would be very stressed and couldn't sleep", score: 1 },
+                    { text: "I would worry but stay calm", score: 2 },
+                    { text: "I would see it as normal market behavior", score: 3 },
+                    { text: "I would enjoy it as an opportunity", score: 4 }
+                ]
+            },
+            {
+                text: "What is your current financial situation?",
+                options: [
+                    { text: "Tight, I need immediate liquidity", score: 1 },
+                    { text: "Stable, but with few savings", score: 2 },
+                    { text: "Comfortable, with good emergency savings", score: 3 },
+                    { text: "Very solid, with multiple income sources", score: 4 }
+                ]
+            },
+            {
+                text: "What type of annual return do you expect?",
+                options: [
+                    { text: "2-4% (similar to bank deposits)", score: 1 },
+                    { text: "4-8% (moderate but stable)", score: 2 },
+                    { text: "8-15% (good risk-return balance)", score: 3 },
+                    { text: "More than 15% (high return)", score: 4 }
+                ]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answers = [];
+        let totalScore = 0;
+        const userId = <%- JSON.stringify(userId) %>;
+
+        function displayQuestion() {
+            const question = questions[currentQuestion];
+            const questionContainer = document.getElementById('questionContainer');
+            
+            // Reset animation
+            questionContainer.style.opacity = '0';
+            questionContainer.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+                document.getElementById('questionText').textContent = question.text;
+                
+                const optionsContainer = document.getElementById('optionsContainer');
+                optionsContainer.innerHTML = '';
+                
+                question.options.forEach((option, index) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.onclick = () => selectOption(index, option.score);
+                    optionDiv.innerHTML = `<div class="option-text">${option.text}</div>`;
+                    optionDiv.setAttribute('data-index', index);
+                    optionsContainer.appendChild(optionDiv);
+                });
+                
+                // Re-trigger animation
+                questionContainer.style.opacity = '1';
+                questionContainer.style.transform = 'translateY(0)';
+                
+                updateProgress();
+                updateButtons();
+            }, 150);
+        }
+
+        function selectOption(optionIndex, score) {
+            // Remove previous selection
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            
+            // Add selection to clicked option
+            document.querySelector(`[data-index="${optionIndex}"]`).classList.add('selected');
+            
+            answers[currentQuestion] = score;
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function updateButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.style.display = currentQuestion > 0 ? 'block' : 'none';
+            nextBtn.textContent = currentQuestion === questions.length - 1 ? 'See Result' : 'Next';
+            nextBtn.disabled = answers[currentQuestion] === undefined;
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                displayQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion();
+            }
+        }
+
+        function showResult() {
+            totalScore = answers.reduce((sum, score) => sum + score, 0);
+            const maxScore = questions.length * 4;
+            const percentage = (totalScore / maxScore) * 100;
+
+
+            
+            let riskProfile, icon, description, className;
+            
+            if (percentage <= 40) {
+                changeRiskLevel("L", userId);
+                riskProfile = "Risk Tolerance: LOW";
+                icon = "🛡️";
+                className = "risk-low";
+                description = "You are a conservative investor. You prefer safe and stable investments like government bonds, bank deposits, and low-risk funds. Your priority is capital preservation over generating high returns.";
+            } else if (percentage <= 70) {
+                changeRiskLevel("M", userId);
+                riskProfile = "Risk Tolerance: MEDIUM";
+                icon = "⚖️";
+                className = "risk-medium";
+                description = "You are a moderate investor. You seek a balance between security and growth. You're interested in mixed funds, some stocks from stable companies, and diversification across different asset types.";
+            } else {
+                changeRiskLevel("H", userId);
+                riskProfile = "Risk Tolerance: HIGH";
+                icon = "🚀";
+                className = "risk-high";
+                description = "You are an aggressive investor. You're willing to take significant risks for the possibility of obtaining high returns. You're interested in growth stocks, emerging markets, and speculative investments.";
+            }
+            
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('resultContainer').style.display = 'block';
+            document.getElementById('resultIcon').textContent = icon;
+            document.getElementById('resultTitle').textContent = riskProfile;
+            document.getElementById('resultTitle').className = `result-title ${className}`;
+            document.getElementById('scoreDisplay').innerHTML = `Score: ${totalScore}/${maxScore} points (${Math.round(percentage)}%)`;
+            document.getElementById('resultDescription').textContent = description;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            answers = [];
+            totalScore = 0;
+            document.getElementById('quizContainer').style.display = 'block';
+            document.getElementById('resultContainer').style.display = 'none';
+            document.getElementById('progressBar').style.width = '0%';
+            displayQuestion();
+        }
+
+        async function changeRiskLevel(risk, userId) {
+
+            try {
+                const response = await fetch('/db/change-risk', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ risk, userId})
+                });
+
+                // Check if response is JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                const text = await response.text();
+                throw new Error(`Unexpected response: ${text.substring(0, 100)}...`);
+                }
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                throw new Error(data.error || 'Unknown error');
+                }
+                
+                console.log(`Risk ${risk} assigned to ${userId}`)
+            } catch (error) {
+                console.error('Registration error:', error);
+            }
+        }
+
+        // Initialize the quiz
+        displayQuestion();
+    </script>
+</body>
+</html>

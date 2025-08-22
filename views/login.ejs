@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In - Quantia</title>
+    <link rel="stylesheet" href="/styles/login-register.css">
+    <style>
+        /* Tus estilos actuales */
+        .header {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        } 
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00d4ff, #4a90e2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(45deg, #00d4ff, #4a90e2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* Estilos para mensajes de error */
+        .error-message {
+            color: #ff4757;
+            background: rgba(255, 71, 87, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+            display: none;
+        }
+
+        .success-message {
+            color: #8fd5ad;
+            background: rgba(46, 213, 115, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+            display: none;
+        }
+    </style>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+    
+    <header class="header">
+        <div class="logo"><a href="/">Quantia</a></div>
+    </header>
+    
+    <main class="main">
+        <div id="content" class="wrapper">
+            <!-- Agregar mensajes de feedback -->
+            <div id="errorMessage" class="error-message"></div>
+            <div id="successMessage" class="success-message"></div>
+
+            <form id="loginForm">
+                <h1>Log In</h1>
+                <div class="input-box">
+                    <input type="text" placeholder="Username" id="login-username" required>
+                    <i class='bx bxs-user'></i>
+                </div>
+                <div class="input-box">
+                    <input type="password" placeholder="Password" id="login-password" required>
+                    <i class='bx bxs-lock-alt'></i>
+                </div>
+
+                <div class="remember-forgot">
+                    <label><input type="checkbox">Remember me</label>
+                    <a href="#">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="btn">Login</button>
+
+                <div class="register-link">
+                    <p>Don't have an account? <a href="/register">Sign Up</a></p>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // Prevenir el envío tradicional del formulario
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Esto es crucial
+            loginUser();
+        });
+
+        async function loginUser() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            
+            // Ocultar mensajes anteriores
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+
+            // Validación básica
+            if (!username || !password) {
+                showError('Please fill in all fields');
+                return;
+            }
+
+            try {
+                const response = await fetch('/db/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                console.log('Login response:', data);
+
+                if (data.success) {
+                    showSuccess('Login successful! Redirecting...');
+                    
+                    // Pequeño delay para que el usuario vea el mensaje
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1000);
+                    
+                } else {
+                    showError(data.error || 'Invalid username or password');
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('Network error. Please try again.');
+            }
+        }
+
+        function showError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        function showSuccess(message) {
+            const successElement = document.getElementById('successMessage');
+            successElement.textContent = message;
+            successElement.style.display = 'block';
+        }
+
+        // También permitir login con Enter key
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                loginUser();
+            }
+        });
+    </script>
+</body>
+</html>

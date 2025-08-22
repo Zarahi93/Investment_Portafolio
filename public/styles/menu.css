@@ -1,0 +1,178 @@
+.header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00d4ff, #4a90e2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-menu a.active,
+        .nav-menu a:hover {
+            color: #00d4ff;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(45deg, #00d4ff, #4a90e2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+    /* Estilos para el menú desplegable - agregar a tu archivo CSS existente */
+    .user-profile {
+        position: relative;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 8px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        min-width: 220px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1000;
+        overflow: hidden;
+    }
+
+    .dropdown-menu.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .dropdown-menu::before {
+        content: '';
+        position: absolute;
+        top: -8px;
+        right: 20px;
+        width: 16px;
+        height: 16px;
+        background: white;
+        transform: rotate(45deg);
+        box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .menu-header {
+        padding: 20px;
+        background: linear-gradient(45deg, #00d4ff, #4a90e2);
+        color: white;
+        text-align: center;
+    }
+
+    .menu-header .avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: bold;
+        margin: 0 auto 10px;
+    }
+
+    .menu-header h3 {
+        margin: 0;
+        font-size: 18px;
+    }
+
+    .menu-header p {
+        margin: 5px 0 0;
+        opacity: 0.8;
+        font-size: 14px;
+    }
+
+    .menu-items {
+        padding: 8px 0;
+    }
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 20px;
+        color: #333;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .menu-item:hover {
+        background: #f8f9fa;
+        color: #667eea;
+    }
+
+    .menu-item.logout {
+        color: #dc3545;
+    }
+
+    .menu-item.logout:hover {
+        background: #f8f9fa;
+    }
+
+    .menu-item span {
+        width: 20px;
+        font-size: 16px;
+    }
+
+    .menu-divider {
+        height: 1px;
+        background: #e9ecef;
+        margin: 8px 0;
+    }

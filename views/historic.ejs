@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Candlestick Chart - IBM Data</title>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <link rel="stylesheet" href="/styles/login-register.css">
+  <style>
+            /* Your current styles */
+        .header {
+            width: 100%;
+            background: rgba(60, 57, 94, 0.827);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        } 
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00d4ff, #4a90e2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+ 
+
+        /* SEARCH STLYES */
+        .search-container {
+            flex: 1;
+            max-width: 80%;
+            margin: 0 10px;
+            position: relative;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .search-box::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #1a1a2e;
+            border: 1px solid #636e72;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1001;
+            display: none;
+        }
+
+        .search-result-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #636e72;
+            transition: background 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-result-item:hover {
+            background: #636e72;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-item .stock-symbol {
+            font-weight: 600;
+            text-align: left;
+            color: #00d4ff;
+        }
+
+        .search-result-item .stock-name {
+            font-size: 12px;
+            text-align: left;
+            color: #b2bec3;
+            margin-top: 2px;
+        }
+
+         .search-result-item .stock-type {
+            text-align: right;
+        }
+
+        .search-result-item .stock-exchange {
+            background-color: #00d4ff;
+            color: #1a1a2e;
+            display: inline;
+            float: right;
+            padding: 3px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        /* Sliding button */
+                .menu-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.2s ease;
+            color: white;
+            background-color: transparent;
+            margin-right: 0.5rem;
+        }
+
+        .menu-item:hover {
+            background: #3634346b;
+        }
+
+        .menu-separator {
+            height: 1px;
+            background: var(--border-color);
+            margin: 5px 0;
+        }
+
+        .toggle-switch {
+            width: 40px;
+            height: 20px;
+            background: var(--border-color);
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: var(--accent-color);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: left 0.3s ease;
+        }
+
+        .toggle-switch.active::after {
+            left: 22px;
+        }
+    </style>
+
+  <style>
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+       background: rgb(255, 255, 255);
+    border: 0.125rem solid var(--color-light-shadow);
+    backdrop-filter: blur(1.25rem);
+      
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    
+    .title-container {
+      text-align: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #ffffff;
+    }
+    
+    h2 {
+      color: #525252;
+      margin-bottom: 5px;
+    }
+    .symbol-info {
+      color: #7f8c8d;
+      font-size: 1.1em;
+      margin-bottom: 20px;
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .time-filters {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .chart-type {
+      display: flex;
+      gap: 10px;
+    }
+    .time-btn, .chart-btn {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 20px;
+      background: #ecf0f1;
+      color: #34495e;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .time-btn:hover, .chart-btn:hover {
+      background: #3498db;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+     .buy-btn {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 20px;
+      background: #09c322;
+      color: #ffffff;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .buy-btn:hover {
+      background: #0dda22;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+    .time-btn.active, .chart-btn.active {
+      background: #2980b9;
+      color: white;
+    }
+    .time-btn.loading {
+      position: relative;
+      color: transparent;
+    }
+    .time-btn.loading::after {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      top: 50%;
+      left: 50%;
+      margin: -8px 0 0 -8px;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    #chart {
+      margin-top: 20px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .loading {
+      text-align: center;
+      padding: 40px;
+      font-style: italic;
+      color: #7f8c8d;
+      font-size: 1.2em;
+    }
+    .error {
+      text-align: center;
+      padding: 20px;
+      color: #c0392b;
+      background-color: #f9ebea;
+      border-radius: 8px;
+      margin: 20px auto;
+    }
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 20px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .stat-box {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      min-width: 150px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    .stat-value {
+      font-size: 1.4em;
+      font-weight: bold;
+      color: #2980b9;
+    }
+    .stat-label {
+      color: #7f8c8d;
+      font-size: 0.9em;
+    }
+    .up {
+      color: #27ae60;
+    }
+    .down {
+      color: #c0392b;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 25px;
+      color: #7f8c8d;
+      font-size: 0.9em;
+    }
+    .tooltip-value {
+      font-weight: bold;
+    }
+    .market-info {
+      text-align: center;
+      margin: 10px 0;
+      color: #7f8c8d;
+      font-size: 0.9em;
+    }
+    @media (max-width: 768px) {
+      .controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .time-filters, .chart-type {
+        justify-content: center;
+      }
+    }
+  </style>
+
+  <style>
+            
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s ease;
+        }
+        
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .modal-body {
+            padding: 25px;
+        }
+        
+        .portfolio-list {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+        
+        .portfolio-item {
+            padding: 15px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .portfolio-item:hover {
+            border-color: #3b82f6;
+            background-color: #f0f7ff;
+        }
+        
+        .portfolio-item.selected {
+            border-color: #3b82f6;
+            background-color: #e0f2fe;
+        }
+        
+        .portfolio-name {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .portfolio-value {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .modal-footer {
+            padding: 20px;
+            background-color: #f9fafb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-cancel {
+            background: white;
+            border: 1px solid #d1d5db;
+            color: #4b5563;
+        }
+        
+        .btn-cancel:hover {
+            background: #f9fafb;
+        }
+        
+        .btn-confirm {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+        }
+        
+        .btn-confirm:hover {
+            box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-confirm:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px 0;
+            color: #6b7280;
+        }
+        
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+    </style>
+  </style>
+</head>
+<body>
+  
+      <header class="header">
+        <div class="nav-container">
+        <div class="logo"><a href="/">Quantia</a></div>
+        
+        
+    </header>
+
+    
+    <!-- Modal for portfolio selection -->
+    <div class="modal-overlay" id="portfolioModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Select Portfolio</h2>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <ul class="portfolio-list" id="portfolioList">
+                    <!-- Portfolios will be loaded here with JavaScript -->
+                </ul>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-cancel" id="cancelSelection">Cancel</button>
+                <button class="btn btn-confirm" id="confirmSelection" disabled>Confirm</button>
+            </div>
+        </div>
+    </div>
+
+  <div class="container">
+    <div class="title-container">
+      <h2>Historical Analysis</h2>
+      <div class="symbol-info" id="symbolInfo">Loading data...</div>
+      <div id="marketInfo" class="market-info"></div>
+        <button class="buy-btn" id="openPortfolioModal">Buy</button>
+
+    </div>
+
+    <div class="controls">
+      <div class="time-filters">
+        <button class="time-btn" data-days="1">1 Day</button>
+        <button class="time-btn" data-days="5">5 Days</button>
+        <button class="time-btn active" data-days="30">1 Month</button>
+        <button class="time-btn" data-days="365">1 Year</button>
+        <button class="time-btn" data-days="max">Maximum</button>
+      </div>
+      
+      <div class="chart-type">
+        <button class="chart-btn" data-type="candlestick">Candles</button>
+        <button class="chart-btn active" data-type="line">Line</button>
+      </div>
+    </div>
+
+    <div id="chart">
+      <div class="loading">Loading data...</div>
+    </div>
+
+    <div class="stats" id="statsContainer">
+      <!-- Statistics will be generated dynamically -->
+    </div>
+
+    <div class="footer">
+      <p>Candlestick Chart - Historical price data | Updated: <span id="updateDate"></span></p>
+    </div>
+  </div>
+
+  <script>
+    let chart;
+    let allData = [];
+    let currentRange = '30';
+    let chartType = 'line';
+    const stockSymbol = '<%= stock %>';
+    let colorBlindMode = false;
+    
+
+    // Set update date
+    document.getElementById('updateDate').textContent = new Date().toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+
+    // Load historical data from API
+    fetch(`/api/historical/${stockSymbol}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('API response error: ' + response.status);
+        }
+        return response.json();
+      })
+      .then(data => {
+        // Remove loading message
+        document.querySelector('#chart').innerHTML = '';
+        
+        // Save all data
+        allData = data.ohlc;
+        
+        // Load current day data by default
+        filterHistoricalData(currentRange);
+        
+        // Update symbol information
+        document.getElementById('symbolInfo').textContent = `Symbol: ${data.symbol} | ${allData.length} data periods`;
+      })
+      .catch(err => {
+        console.error("Error loading historical data:", err);
+        document.querySelector('#chart').innerHTML = 
+          `<div class="error">Error loading data: ${err.message}. Make sure the API is running on localhost:5000</div>`;
+      });
+
+    // Add event listeners to time range buttons
+    document.querySelectorAll('.time-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        // Remove active class from all buttons
+        document.querySelectorAll('.time-btn').forEach(btn => {
+          btn.classList.remove('active');
+          btn.classList.remove('loading');
+        });
+        
+        // Add active class to clicked button
+        this.classList.add('active');
+        
+        // Get selected range
+        const range = this.getAttribute('data-days');
+        currentRange = range;
+        
+        // If it's 1 day, load real-time data
+        if (range === '1') {
+          this.classList.add('loading');
+          loadTodayData();
+        } else {
+          // For other ranges, use historical data
+          filterHistoricalData(range);
+        }
+      });
+    });
+
+    // Add event listeners to chart type buttons
+    document.querySelectorAll('.chart-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        // Remove active class from all buttons
+        document.querySelectorAll('.chart-btn').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        
+        // Add active class to clicked button
+        this.classList.add('active');
+        
+        // Get selected chart type
+        chartType = this.getAttribute('data-type');
+        
+        // Re-render chart with new type
+        if (currentRange === '1') {
+          loadTodayData();
+        } else {
+          filterHistoricalData(currentRange);
+        }
+      });
+    });
+
+    // Function to load today's data
+    function loadTodayData() {
+      fetch(`/api/today/${stockSymbol}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('API response error: ' + response.status);
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Remove loading state from button
+          const loadingBtn = document.querySelector('.time-btn.loading');
+          if (loadingBtn) loadingBtn.classList.remove('loading');
+          
+          // Show market information
+          document.getElementById('marketInfo').innerHTML = `
+            Market open: ${new Date(data.marketOpen).toLocaleDateString('en-US')} | 
+            Last update: ${new Date(data.lastUpdate).toLocaleTimeString('en-US')} |
+            Interval: ${data.interval}
+          `;
+          
+          // Check if there is data
+          if (!data.dataPoints || data.dataPoints.length === 0) {
+            document.querySelector('#chart').innerHTML = 
+              '<div class="error">No data available for today</div>';
+            document.getElementById('statsContainer').innerHTML = '';
+            return;
+          }
+          
+          // Convert dataPoints to OHLC format
+          const ohlcData = data.dataPoints.map(point => {
+            return {
+              date: point.date,
+              open: point.open,
+              high: point.high,
+              low: point.low,
+              close: point.close,
+              volume: point.volume
+            };
+          });
+          
+          // Render chart and statistics
+          renderChart(ohlcData);
+          updateStats(ohlcData);
+        })
+        .catch(err => {
+          console.error("Error loading today's data:", err);
+          const loadingBtn = document.querySelector('.time-btn.loading');
+          if (loadingBtn) loadingBtn.classList.remove('loading');
+          document.querySelector('#chart').innerHTML = 
+            `<div class="error">Error loading today's data: ${err.message}</div>`;
+        });
+    }
+
+    // Function to filter historical data
+    function filterHistoricalData(range) {
+      let filteredData = [];
+      
+      if (range === 'max') {
+        filteredData = allData;
+      } else {
+        const days = parseInt(range);
+        const cutoffDate = new Date();
+        cutoffDate.setDate(cutoffDate.getDate() - days);
+        
+        filteredData = allData.filter(item => {
+          return new Date(item.date) >= cutoffDate;
+        });
+      }
+      
+      // Hide market information for historical data
+      document.getElementById('marketInfo').innerHTML = '';
+      
+      // Update chart and statistics
+      renderChart(filteredData);
+      updateStats(filteredData);
+    }
+
+    // Function to format numbers to 2 decimals
+    function formatToTwoDecimals(value) {
+      return parseFloat(value.toFixed(2));
+    }
+
+    // Function to render chart
+    function renderChart(ohlcData) {
+      // Check if there is data
+      if (!ohlcData || ohlcData.length === 0) {
+        document.querySelector('#chart').innerHTML = 
+          '<div class="error">No data available for the selected range</div>';
+        return;
+      }
+      
+      // Sort data by date (oldest to newest)
+      ohlcData.sort((a, b) => new Date(a.date) - new Date(b.date));
+      
+      let seriesData;
+      let seriesConfig;
+      
+      if (chartType === 'candlestick') {
+        // Prepare data for candlestick chart - CORRECTED FORMAT
+        seriesData = ohlcData.map(d => {
+          return {
+            x: new Date(d.date),
+            y: [
+              formatToTwoDecimals(d.open),
+              formatToTwoDecimals(d.high),
+              formatToTwoDecimals(d.low),
+              formatToTwoDecimals(d.close)
+            ]
+          };
+        });
+        
+        seriesConfig = [{
+          name: 'Price',
+          type: 'candlestick',
+          data: seriesData
+        }];
+      } else {
+        // Prepare data for line chart (use closing price)
+        seriesData = ohlcData.map(d => {
+          return {
+            x: new Date(d.date),
+            y: formatToTwoDecimals(d.close)
+          };
+        });
+        
+        seriesConfig = [{
+          name: 'Closing Price',
+          type: 'line',
+          data: seriesData
+        }];
+      }
+
+      const lastClose = formatToTwoDecimals(ohlcData[ohlcData.length - 1].close);
+      const firstOpen = formatToTwoDecimals(ohlcData[0].open);
+      
+      const titleText = currentRange === '1' 
+        ? `IBM - Today's prices (${ohlcData.length} periods)` 
+        : `IBM - Historical prices (${ohlcData.length} periods)`;
+      
+      const options = {
+        chart: {
+          type:  'line',
+          height: 500,
+          animations: {
+            enabled: false
+          },
+          toolbar: {
+            show: true,
+            tools: {
+              download: true,
+              selection: true,
+              zoom: true,
+              zoomin: true,
+              zoomout: true,
+              pan: true,
+              reset: true
+            }
+          },
+          events: {
+            // Capture chart errors
+            mounted: function(ctx, config) {
+              console.log('Chart mounted correctly');
+            },
+            updated: function(ctx, config) {
+              console.log('Chart updated correctly');
+            },
+            // Handle errors
+            error: function(err) {
+              console.error('Chart error:', err);
+              document.querySelector('#chart').innerHTML = 
+                '<div class="error">Error rendering chart. Trying with line chart...</div>';
+              // Try with line chart as fallback
+              if (chartType === 'candlestick') {
+                chartType = 'line';
+                document.querySelector('.chart-btn[data-type="line"]').click();
+              }
+            }
+          }
+        },
+        series: seriesConfig,
+        xaxis: {
+          type: 'datetime',
+          labels: {
+            datetimeFormatter: {
+                day: 'dd MMM',
+                month: 'MMM yyyy',
+                hour: 'HH:mm'
+            }
+          }
+        },
+        yaxis: {
+          tooltip: {
+            enabled: true
+          },
+          labels: {
+            formatter: function(val) {
+              return val.toFixed(2);
+            }
+          }
+        },
+        plotOptions: {
+          candlestick: {
+            colors: {
+              upward: '#27ae60',
+              downward: '#c0392b'
+            },
+            wick: {
+              useFillColor: true
+            }
+          }
+        },
+        stroke: {
+          width: chartType === 'line' ? 3 : undefined
+        },
+        colors: chartType === 'line' ? ['#2980b9'] : undefined,
+        tooltip: {
+          x: {
+            format: currentRange === '1' ? 'HH:mm' : 'dd MMM yyyy HH:mm'
+          },
+          y: {
+            formatter: function(value, { seriesIndex, dataPointIndex, w }) {
+              if (chartType === 'candlestick') {
+                // Verify data exists before accessing it
+                if (w && w.config && w.config.series && w.config.series[seriesIndex] && 
+                    w.config.series[seriesIndex].data && w.config.series[seriesIndex].data[dataPointIndex] &&
+                    w.config.series[seriesIndex].data[dataPointIndex].y) {
+                  const points = w.config.series[seriesIndex].data[dataPointIndex].y;
+                  return `
+                    <div class="tooltip-value">Open: $${points[0].toFixed(2)}</div>
+                    <div class="tooltip-value">High: $${points[1].toFixed(2)}</div>
+                    <div class="tooltip-value">Low: $${points[2].toFixed(2)}</div>
+                    <div class="tooltip-value">Close: $${points[3].toFixed(2)}</div>
+                  `;
+                } else {
+                  return `<div class="tooltip-value">Close: $${value.toFixed(2)}</div>`;
+                }
+              } else {
+                return `<div class="tooltip-value">Close: $${value.toFixed(2)}</div>`;
+              }
+            }
+          }
+        },
+        title: {
+          text: titleText,
+          align: 'left',
+          style: {
+            fontSize: '16px',
+            fontWeight: 'bold',
+            color: '#7f8c8d'
+          }
+        },
+        noData: {
+          text: 'No data available',
+          align: 'center',
+          verticalAlign: 'middle',
+          offsetX: 0,
+          offsetY: 0,
+          style: {
+            color: '#7f8c8d',
+            fontSize: '16px',
+            fontFamily: undefined
+          }
+        }
+      };
+
+         const options2 = {
+        chart: {
+          type: 'candlestick',
+          height: 500,
+          animations: {
+            enabled: false
+          },
+          toolbar: {
+            show: true,
+            tools: {
+              download: true,
+              selection: true,
+              zoom: true,
+              zoomin: true,
+              zoomout: true,
+              pan: true,
+              reset: true
+            }
+          }
+        },
+        series: [{
+          name: 'Price',
+          data: seriesData
+        }],
+        xaxis: {
+          type: 'datetime',
+          labels: {
+            datetimeFormatter: {
+                day: 'dd MMM',
+                month: 'MMM yyyy',
+                hour: 'HH:mm'
+            }
+          }
+        },
+        yaxis: {
+          tooltip: {
+            enabled: true
+          },
+          labels: {
+            formatter: function(val) {
+              return val.toFixed(2);
+            }
+          }
+        },
+        plotOptions: {
+          candlestick: {
+            colors: {
+              upward: colorBlindMode == true ? 'red' : '#27ae60' , // Gains
+              downward: colorBlindMode == true ? 'black' : '#c0392b' // Losses
+            },
+            wick: {
+              useFillColor: true
+            }
+          }
+        },
+        tooltip: {
+          x: {
+            format: currentRange === '1' ? 'HH:mm' : 'dd MMM yyyy HH:mm'
+          },
+          y: {
+            formatter: function(value, { seriesIndex, dataPointIndex, w }) {
+              const points = w.config.series[seriesIndex].data[dataPointIndex].y;
+              return `
+                <div class="tooltip-value">Open: $${points[0].toFixed(2)}</div>
+                <div class="tooltip-value">High: $${points[1].toFixed(2)}</div>
+                <div class="tooltip-value">Low: $${points[2].toFixed(2)}</div>
+                <div class="tooltip-value">Close: $${points[3].toFixed(2)}</div>
+              `;
+            }
+          }
+        },
+        title: {
+          text: titleText,
+          align: 'left',
+          style: {
+            fontSize: '16px',
+            fontWeight: 'bold',
+            color: '#fff'
+          }
+        }
+      };
+
+      
+      try {
+        if (chart) {
+            const option_chart = chartType == "line" ? options : options2;
+          chart.updateOptions(option_chart);
+          chart.updateSeries(seriesConfig);
+        } else {
+          chart = new ApexCharts(document.querySelector("#chart"), options);
+          chart.render();
+        }
+      } catch (error) {
+        console.error('Error rendering chart:', error);
+        document.querySelector('#chart').innerHTML = 
+          '<div class="error">Error rendering chart. Trying with line chart...</div>';
+        // Try with line chart as fallback
+        if (chartType === 'candlestick') {
+          chartType = 'line';
+          document.querySelector('.chart-btn[data-type="line"]').click();
+        }
+      }
+    }
+    
+    // Function to update statistics
+    function updateStats(ohlcData) {
+      if (!ohlcData || ohlcData.length === 0) return;
+      
+      const first = ohlcData[0];
+      const last = ohlcData[ohlcData.length - 1];
+      
+      // Calculate changes
+      const change = formatToTwoDecimals(last.close - first.open);
+      const changePercent = formatToTwoDecimals((change / first.open) * 100);
+      
+      // Find maximum and minimum in the period
+      let max = Number.MIN_VALUE;
+      let min = Number.MAX_VALUE;
+      
+      ohlcData.forEach(item => {
+        if (item.high > max) max = item.high;
+        if (item.low < min) min = item.low;
+      });
+      
+      max = formatToTwoDecimals(max);
+      min = formatToTwoDecimals(min);
+      
+      const statsHTML = `
+        <div class="stat-box">
+          <div class="stat-label">Current Price</div>
+          <div class="stat-value">$${formatToTwoDecimals(last.close).toFixed(2)}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Change</div>
+          <div class="stat-value ${change >= 0 ? 'up' : 'down'}">${change >= 0 ? '+' : ''}${change.toFixed(2)}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">% Change</div>
+          <div class="stat-value ${changePercent >= 0 ? 'up' : 'down'}">${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Maximum</div>
+          <div class="stat-value">$${max.toFixed(2)}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Minimum</div>
+          <div class="stat-value">$${min.toFixed(2)}</div>
+        </div>
+      `;
+      
+      document.getElementById('statsContainer').innerHTML = statsHTML;
+    }
+  </script>
+
+    <script>
+      let currentUser = <%- JSON.stringify(user || null) %>;
+        const userId = currentUser.id;
+        // Sample data for portfolios
+        let samplePortfolios = null;
+;
+        // Global variables
+        let selectedPortfolioId = null;
+
+        // DOM elements
+        const openModalBtn = document.getElementById('openPortfolioModal');
+        const modalOverlay = document.getElementById('portfolioModal');
+        const closeModalBtn = document.getElementById('closeModal');
+        const cancelBtn = document.getElementById('cancelSelection');
+        const confirmBtn = document.getElementById('confirmSelection');
+        const portfolioList = document.getElementById('portfolioList');
+
+
+        async function getPortfolios (userId) {
+  try {
+    const response = await fetch(`/db/portfolios/${userId}`);
+    if (!response.ok) {
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+    const data = await response.json();
+    // samplePortfolios = data.portfolios;
+    return data.portfolios;
+  } catch (error) {
+    console.error('Error getting sample portfolios:', error);
+    throw error;
+  }
+};
+
+
+        // Function to format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(amount);
+        }
+
+async function renderPortfolios() {
+    try {
+        const response = await fetch(`/db/portfolios/${userId}`);
+    if (!response.ok) {
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+    const data = await response.json();
+    console.log(data.data.portfolios);
+    const samplePortfolios = data.data.portfolios;
+        if (samplePortfolios.length === 0) {
+            portfolioList.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">📂</div>
+                    <p>No portfolios available</p>
+                </div>
+            `;
+            return;
+        }
+
+        portfolioList.innerHTML = samplePortfolios.map(portfolio => `
+            <li class="portfolio-item" onclick="selectPort(${portfolio.portfolio_id})">
+                <div>
+                    <div class="portfolio-name">${portfolio.name}</div>
+                    <div class="portfolio-value">${formatCurrency(portfolio.total_invested)}</div>
+                </div>
+                <div>→</div>
+            </li>
+        `).join('');
+    } catch (error) {
+        console.error('Error rendering portfolios:', error);
+        portfolioList.innerHTML = `
+            <div class="error-state">
+                <div class="error-icon">⚠️</div>
+                <p>Error loading portfolios</p>
+            </div>
+        `;
+    }
+}
+        // Function to open modal
+        function openModal() {
+            modalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Function to close modal
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            
+            // Reset selection
+            selectedPortfolioId = null;
+            confirmBtn.disabled = true;
+            
+            // Remove visual selection
+            document.querySelectorAll('.portfolio-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+        }
+
+        // Function to confirm selection
+        function confirmSelection() {
+            if (!selectedPortfolioId) return;
+            
+            const selectedPortfolio = samplePortfolios.find(p => p.id == selectedPortfolioId);
+            alert(`You have selected the portfolio: ${selectedPortfolio.name}`);
+            
+            // Here you could redirect to the purchase page or perform another action
+            closeModal();
+        }
+
+async function selectPort(id) {
+  console.log(id);
+    selectedPortfolioId = id;
+    closeModal();
+    console.log(JSON.stringify({
+                userId: userId,
+                portfolioId: id,
+                assetSymbol: stockSymbol,
+                quantity: 1,
+                price: 0
+            }));
+    try {
+        const response = await fetch('/db/buy-asset', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userId: userId,
+                portfolioId: id,
+                assetSymbol: stockSymbol,
+                quantity: 1,
+                price: 0
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            alert('Purchase completed:', result.message);
+             const redirectUrl = '/portfolio/assets/' + id;
+              window.location.href = redirectUrl;
+            // You can add additional logic after a successful purchase here
+        } else {
+            alert('Purchase error:', result.error);
+            // Handle error (show message to user, etc.)
+        }
+    } catch (error) {
+        console.error('Connection error:', error);
+    }
+}
+
+        // Event Listeners
+        openModalBtn.addEventListener('click', openModal);
+        closeModalBtn.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+        confirmBtn.addEventListener('click', confirmSelection);
+
+        // Close modal when clicking outside content
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                closeModal();
+            }
+        });
+
+        // Initialize portfolio list
+        renderPortfolios();
+    </script>
+
+
+</body>
+</html>

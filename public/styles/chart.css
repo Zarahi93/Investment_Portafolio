@@ -1,0 +1,132 @@
+.minichart-container {
+    font-family: 'Roboto', Arial, sans-serif;
+    color: #ffffff;
+    width: 100%;
+    max-width: 25rem;
+    min-width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.625rem;
+    padding: 0.9375rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.1);
+}
+
+.minichart-container:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.08);
+}
+
+.minichart-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.625rem;
+}
+
+.stock-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stock-symbol {
+    font-size: 1.125rem;
+    font-weight: bold;
+}
+
+.stock-price {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.stock-change {
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+}
+
+.positive {
+    color: #4CAF50;
+}
+
+.negative {
+    color: #F44336;
+}
+
+.chart-container {
+    height: 9.375rem;
+    position: relative;
+}
+
+.minichart-footer {
+    margin-top: 0.625rem;
+    font-size: 0.75rem;
+    color: #ffffff;
+    text-align: right;
+}
+
+.loading {
+    color: #666;
+    text-align: center;
+    padding: 1.25rem;
+}
+
+.error {
+    color: #F44336;
+    text-align: center;
+    padding: 1.25rem;
+}
+
+.refresh-info {
+    font-size: 0.75rem;
+    color: #999;
+    margin-top: 0.3125rem;
+}
+
+/* Media queries para mayor responsividad */
+@media (max-width: 768px) {
+    .minichart-container {
+        max-width: 100%;
+        min-width: 16rem;
+        padding: 0.75rem;
+    }
+    
+    .stock-symbol {
+        font-size: 1rem;
+    }
+    
+    .stock-price {
+        font-size: 1.25rem;
+    }
+    
+    .stock-change {
+        font-size: 0.8125rem;
+    }
+    
+    .chart-container {
+        height: 8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .minichart-container {
+        min-width: 14rem;
+        padding: 0.625rem;
+    }
+    
+    .stock-symbol {
+        font-size: 0.9375rem;
+    }
+    
+    .stock-price {
+        font-size: 1.125rem;
+    }
+    
+    .minichart-footer,
+    .refresh-info {
+        font-size: 0.6875rem;
+    }
+    
+    .chart-container {
+        height: 7rem;
+    }
+}

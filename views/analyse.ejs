@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Analysis Type</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e293b;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 50px auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 15px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+            color: #cbd5e1;
+        }
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .analysis-card {
+            background: linear-gradient(145deg, #334155, #3f4c63);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #475569;
+        }
+
+        .analysis-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--accent-color);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .analysis-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, var(--accent-color) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 0;
+        }
+
+        .analysis-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+        }
+
+        .analysis-card:hover::after {
+            opacity: 0.1;
+        }
+
+        .analysis-card:active {
+            transform: translateY(-8px) scale(1.01);
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .analysis-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .analysis-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--accent-color);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-right: 20px;
+            color: white;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .analysis-info h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 8px;
+        }
+
+        .analysis-info p {
+            font-size: 14px;
+            color: #94a3b8;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        .analysis-description {
+            color: #cbd5e1;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            opacity: 0.9;
+        }
+
+        .analysis-features {
+            margin-bottom: 30px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .feature-item::before {
+            content: '✓';
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-right: 10px;
+            width: 16px;
+        }
+
+        .select-button {
+            width: 100%;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .select-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .select-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .select-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .select-button:active {
+            transform: translateY(-1px);
+        }
+
+        .select-button span {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Specific colors for each card */
+        .historical {
+            --accent-color: #3b82f6;
+        }
+
+        .predictive {
+            --accent-color: #10b981;
+        }
+
+        .proximity {
+            --accent-color: #f59e0b;
+        }
+
+        /* Additional animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+
+        .analysis-icon {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .analysis-card:nth-child(2) .analysis-icon {
+            animation-delay: -2s;
+        }
+
+        .analysis-card:nth-child(3) .analysis-icon {
+            animation-delay: -4s;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 30px auto;
+                padding: 0 15px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .header p {
+                font-size: 16px;
+            }
+
+            .analysis-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .analysis-card {
+                padding: 25px;
+            }
+
+            .analysis-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 28px;
+            }
+
+            .analysis-info h3 {
+                font-size: 20px;
+            }
+        }
+
+        /* Decorative particle effects */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: particle-float 8s linear infinite;
+        }
+
+        @keyframes particle-float {
+            0% {
+                transform: translateY(100px) translateX(0px);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100px) translateX(20px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Analysis Dashboard</h1>
+            <p>Select the type of analysis you want to perform</p>
+        </div>
+        
+        <div class="analysis-grid">
+            <!-- Historical Analysis -->
+            <div class="analysis-card historical" onclick="redirectToAnalysis('historical')">
+                <div class="particle" style="top: 20%; left: 10%; animation-delay: 0s;"></div>
+                <div class="particle" style="top: 60%; left: 80%; animation-delay: 3s;"></div>
+                <div class="card-content">
+                    <div class="analysis-header">
+                        <div class="analysis-icon">📈</div>
+                        <div class="analysis-info">
+                            <h3>Historical Analysis</h3>
+                            <p>Data from the past</p>
+                        </div>
+                    </div>
+                    <div class="analysis-description">
+                        Explore and analyze the historical performance of your investments. Visualize trends, patterns, and past behavior to better understand your portfolio.
+                    </div>
+                    <div class="analysis-features">
+                        <div class="feature-item">Time performance charts</div>
+                        <div class="feature-item">Historical volatility analysis</div>
+                        <div class="feature-item">Comparison with benchmarks</div>
+                        <div class="feature-item">Past risk metrics</div>
+                    </div>
+                    <button class="select-button">
+                        <span>Analyze History</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Predictive Analysis -->
+            <div class="analysis-card predictive" onclick="redirectToAnalysis('predictive')">
+                <div class="particle" style="top: 30%; left: 20%; animation-delay: 1s;"></div>
+                <div class="particle" style="top: 70%; left: 70%; animation-delay: 4s;"></div>
+                <div class="card-content">
+                    <div class="analysis-header">
+                        <div class="analysis-icon">🔮</div>
+                        <div class="analysis-info">
+                            <h3>Predictive Analysis</h3>
+                            <p>Future projections</p>
+                        </div>
+                    </div>
+                    <div class="analysis-description">
+                        Use advanced machine learning algorithms to project possible future scenarios and optimize your investment strategy based on trends.
+                    </div>
+                    <div class="analysis-features">
+                        <div class="feature-item">AI prediction models</div>
+                        <div class="feature-item">Monte Carlo scenarios</div>
+                        <div class="feature-item">Performance forecasts</div>
+                        <div class="feature-item">Portfolio optimization</div>
+                    </div>
+                    <button class="select-button">
+                        <span>Analyze Predictive</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Proximity Analysis -->
+            <div class="analysis-card proximity" onclick="redirectToAnalysis('proximity')">
+                <div class="particle" style="top: 40%; left: 15%; animation-delay: 2s;"></div>
+                <div class="particle" style="top: 50%; left: 85%; animation-delay: 5s;"></div>
+                <div class="card-content">
+                    <div class="analysis-header">
+                        <div class="analysis-icon">⏰</div>
+                        <div class="analysis-info">
+                            <h3>Proximity Analysis</h3>
+                            <p>Short term</p>
+                        </div>
+                    </div>
+                    <div class="analysis-description">
+                        Focus on immediate opportunities and risks. Analyze recent market movements and make informed decisions for the short term.
+                    </div>
+                    <div class="analysis-features">
+                        <div class="feature-item">Real-time market alerts</div>
+                        <div class="feature-item">Advanced technical analysis</div>
+                        <div class="feature-item">Entry/exit signals</div>
+                        <div class="feature-item">Volatility monitoring</div>
+                    </div>
+                    <button class="select-button">
+                        <span>Analyze Proximity</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function redirectToAnalysis(type) {
+            // Define redirect URLs for each analysis type
+            const redirectUrls = {
+                'historical': '/analyse/historic',
+                'predictive': '/analyse/predictive',
+                'proximity': '/analyse/close'
+            };
+
+            const redirectUrl = redirectUrls[type];
+            
+            if (redirectUrl) {
+                console.log(`Redirecting to ${type} analysis:`, redirectUrl);
+                
+                // Visual effect before redirecting
+                const card = event.currentTarget;
+                card.style.transform = 'scale(0.95)';
+                card.style.opacity = '0.8';
+                
+                setTimeout(() => {
+                    // Redirect to the corresponding URL
+                    window.location.href = redirectUrl;
+                    
+                    // Alternative redirect methods:
+                    // window.open(redirectUrl, '_blank'); // New tab
+                    // window.location.replace(redirectUrl); // Without history
+                }, 200);
+            } else {
+                console.error('Redirect URL not found for:', type);
+            }
+        }
+
+        // Create additional particles dynamically
+        function createParticles() {
+            const cards = document.querySelectorAll('.analysis-card');
+            cards.forEach(card => {
+                for (let i = 0; i < 3; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.top = Math.random() * 100 + '%';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.animationDelay = Math.random() * 8 + 's';
+                    particle.style.animationDuration = (Math.random() * 4 + 6) + 's';
+                    card.appendChild(particle);
+                }
+            });
+        }
+
+        // Initialize visual effects
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            
+            // Add additional hover effects
+            const cards = document.querySelectorAll('.analysis-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.boxShadow = '0 30px 60px rgba(0,0,0,0.6), 0 0 50px rgba(' + 
+                        getComputedStyle(this).getPropertyValue('--accent-color').slice(1) + ', 0.3)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.boxShadow = '0 20px 40px rgba(0,0,0,0.4)';
+                });
+            });
+        });
+
+        // Helper function to convert hex color to rgb
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+    </script>
+</body>
+</html>

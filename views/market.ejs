@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantia - Stock Finder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Floating background elements */
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, rgba(0, 212, 255, 0.1), rgba(74, 144, 226, 0.1));
+            animation: float 20s infinite linear;
+        }
+
+        .circle1 {
+            width: 120px;
+            height: 120px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .circle2 {
+            width: 180px;
+            height: 180px;
+            top: 60%;
+            right: 10%;
+            animation-delay: -10s;
+        }
+
+        .circle3 {
+            width: 100px;
+            height: 100px;
+            bottom: 20%;
+            left: 30%;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-30px) rotate(180deg);
+            }
+            100% {
+                transform: translateY(0px) rotate(360deg);
+            }
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00d4ff, #4a90e2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .nav-btn:hover {
+            background: linear-gradient(45deg, #00d4ff, #4a90e2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Main content */
+        .main-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .hero-title {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #00d4ff, #4a90e2, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            0% {
+                text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+            }
+            100% {
+                text-shadow: 0 0 30px rgba(74, 144, 226, 0.5);
+            }
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 40px;
+        }
+
+        /* Search container */
+        .search-container {
+            display: flex;
+            margin-bottom: 30px;
+            gap: 15px;
+            align-items: stretch;
+        }
+
+        #stockSearch {
+            flex: 1;
+            padding: 18px 25px;
+            font-size: 16px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        #stockSearch:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        #stockSearch::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .search-btn {
+            padding: 18px 35px;
+            background: linear-gradient(45deg, #00d4ff, #4a90e2);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 212, 255, 0.5);
+        }
+
+        .search-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .search-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .search-btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* Results container */
+        #searchResults {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            min-height: 200px;
+            transition: all 0.3s ease;
+        }
+
+        #searchResults:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Stock items */
+        .stock-item {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stock-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .stock-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(10px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.2);
+        }
+
+        .stock-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(45deg, #00d4ff, #4a90e2);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .stock-item:hover::before {
+            transform: scaleY(1);
+        }
+
+        .stock-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .stock-main {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .stock-symbol {
+            font-weight: bold;
+            color: #00d4ff;
+            font-size: 20px;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+
+        .stock-name {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 16px;
+        }
+
+        .stock-price-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-items: flex-start;
+        }
+
+        .stock-price {
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .stock-change {
+            font-size: 14px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 8px;
+        }
+
+        .positive {
+            color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .negative {
+            color: #ff4757;
+            background: rgba(255, 71, 87, 0.1);
+        }
+
+        .stock-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-end;
+        }
+
+        .stock-exchange {
+            background: linear-gradient(45deg, #00d4ff, #4a90e2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .market-status {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .market-status.open {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+
+        .market-status.closed {
+            background: rgba(255, 71, 87, 0.2);
+            color: #ff4757;
+        }
+
+        /* Loading and error states */
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 16px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.6;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .error {
+            color: #ff4757;
+            padding: 30px 20px;
+            text-align: center;
+            font-size: 16px;
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid rgba(255, 71, 87, 0.2);
+            border-radius: 15px;
+        }
+
+        .initial-message {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 16px;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 20px;
+                padding: 15px;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .hero-title {
+                font-size: 36px;
+            }
+
+            .search-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .stock-item {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+                text-align: left;
+            }
+
+            .stock-main {
+                justify-content: center;
+            }
+
+            .stock-details {
+                align-items: center;
+                flex-direction: row;
+                justify-content: space-between;
+            }
+
+            .main-container {
+                padding: 20px 15px;
+            }
+        }
+
+        /* Animation for stock items appearing */
+        .stock-item {
+            opacity: 0;
+            animation: slideInFromLeft 0.6s ease forwards;
+        }
+
+        @keyframes slideInFromLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="/styles/menu.css">
+</head>
+<body>
+    <div class="floating-elements">
+        <div class="floating-circle circle1"></div>
+        <div class="floating-circle circle2"></div>
+        <div class="floating-circle circle3"></div>
+    </div>
+
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo"><a href="/">Quantia</a></div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="/market" class="active">Market</a></li>
+                    <li><a href="/balance">Balance</a></li>
+                    <li><a href="/port-selector">Portfolio</a></li>
+                    <li><a href="/analyse">News</a></li>
+                </ul>
+            </nav>
+<div class="user-profile" onclick="toggleUserMenu(event)">
+    <div class="user-avatar" id="userAvatar">
+        <%= user.username ? user.username.substring(0, 2).toUpperCase() : 'US' %>
+    </div>
+    <span id="usernameDisplay"><%= user.username || 'User' %></span>
+    
+    <!-- Dropdown menu -->
+    <div class="dropdown-menu" id="userDropdown">
+        <div class="menu-header">
+            <div class="avatar"><%= user.username ? user.username.substring(0, 2).toUpperCase() : 'US' %></div>
+            <h3><%= user.username || 'User' %></h3>
+            <p><%= user.email || 'user@email.com' %></p>
+        </div>
+        
+        <div class="menu-items">
+            <div class="menu-item" onclick="handleMenuClick('profile')">
+                <span>👤</span>
+                View Profile
+            </div>
+            
+            <div class="menu-item" onclick="handleMenuClick('settings')">
+                <span>⚙️</span>
+                Settings
+            </div>
+            
+            <div class="menu-item" onclick="handleMenuClick('help')">
+                <span>❓</span>
+                Help
+            </div>
+            
+            <div class="menu-divider"></div>
+            
+            <div class="menu-item logout" onclick="handleMenuClick('logout')">
+                <span>🚪</span>
+                Log Out
+            </div>
+        </div>
+    </div>
+</div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <section class="hero-section">
+            <h1 class="hero-title">Stock Finder</h1>
+            <p class="hero-subtitle">Find and analyze global market stocks with real-time information</p>
+        </section>
+
+        <div class="search-container">
+            <input type="text" id="stockSearch" placeholder="Search for a stock (e.g. Apple, Amazon, Tesla...)">
+            <button class="search-btn" onclick="searchStocks()">
+                <span>Search</span>
+            </button>
+        </div>
+
+        <div id="searchResults">
+            <div class="initial-message">
+                <p>Enter a search term to start exploring the world of investments</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // API configuration (replace with your real API key)
+        async function getStockSymbols(searchTerm = '') {
+            // Check if the search term is empty
+            if (!searchTerm.trim()) {
+                return [];
+            }
+            
+            const url = `/api/search/${searchTerm}`;
+            
+            try {
+                const response = await fetch(url);
+                console.log(response);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP Error: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.status === 'error') {
+                    throw new Error(data.message);
+                }
+
+                console.log(data);
+
+                return data.results;
+            } catch (error) {
+                console.error("Error getting data:", error);
+                throw error;
+            }
+        }
+
+        async function searchStocks() {
+            const searchInput = document.getElementById('stockSearch').value.trim();
+            const resultsContainer = document.getElementById('searchResults');
+            
+            if (!searchInput) {
+                resultsContainer.innerHTML = '<p class="error">Please enter a search term</p>';
+                return;
+            }
+            resultsContainer.innerHTML = '<p class="loading">Searching for stocks in global markets...</p>';            
+            try {
+                const stocks = await getStockSymbols(searchInput);
+                
+                if (stocks.length > 0) {
+                    let html = '';
+                    
+                    // Process each stock to get the price
+                    for (let i = 0; i < stocks.length; i++) {
+                        const stock = stocks[i];
+                        try {
+                            // Make the API call to get the price
+                            const priceResponse = await fetch(`/api/price/${stock.symbol}`);
+                            
+                            if (!priceResponse.ok) {
+                                throw new Error(`Error ${priceResponse.status} getting price`);
+                            }
+                            
+                            const priceData = await priceResponse.json();
+                            
+                            html += `
+                            <div class="stock-item" onclick="selectStock('${stock.symbol}')" style="animation-delay: ${i * 0.1}s">
+                                <div class="stock-info">
+                                    <div class="stock-main">
+                                        <span class="stock-symbol">${stock.symbol}</span>
+                                        <span class="stock-name">${stock.name}</span>
+                                    </div>
+                                    <div class="stock-price-info">
+                                        <span class="stock-price">$${priceData.currentPrice?.toFixed(2) || 'N/A'}</span>
+                                        <span class="stock-change ${priceData.change >= 0 ? 'positive' : 'negative'}">
+                                            ${priceData.change >= 0 ? '+' : ''}${priceData.change?.toFixed(2) || '0.00'} (${priceData.changePercent || '0.00'}%)
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="stock-details">
+                                    <span class="stock-exchange">${stock.exchange}</span>
+                                    <span class="market-status ${priceData.isMarketOpen ? 'open' : 'closed'}">
+                                        ${priceData.isMarketOpen ? '🟢 Open' : '🔴 Closed'}
+                                    </span>
+                                </div>
+                            </div>
+                            `;
+                        } catch (priceError) {
+                            // If there's an error getting the price, show the stock without price
+                            console.error(`Error getting price for ${stock.symbol}:`, priceError);
+                            html += `
+                            <div class="stock-item" onclick="selectStock('${stock.symbol}')" style="animation-delay: ${i * 0.1}s">
+                                <div class="stock-info">
+                                    <div class="stock-main">
+                                        <span class="stock-symbol">${stock.symbol}</span>
+                                        <span class="stock-name">${stock.instrument_name || stock.name}</span>
+                                    </div>
+                                    <div class="stock-price-info">
+                                        <span class="stock-price">Price not available</span>
+                                    </div>
+                                </div>
+                                <div class="stock-details">
+                                    <span class="stock-exchange">${stock.exchange}</span>
+                                    <span class="stock-country">${stock.country || 'N/A'}</span>
+                                </div>
+                            </div>
+                            `;
+                        }
+                    }
+                    
+                    resultsContainer.innerHTML = html;
+                } else {
+                    resultsContainer.innerHTML = '<p class="error">No results found for your search. Try with other terms.</p>';
+                }
+            } catch (error) {
+                resultsContainer.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+
+        function selectStock(symbol) {
+            console.log(`Selected stock: ${symbol}`);
+            // Here you can redirect to another page or show more details
+            window.location.href = `/analyse/historic?stock=${encodeURIComponent(symbol)}`;
+        }
+
+        // Allow search when pressing Enter
+        document.getElementById('stockSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchStocks();
+            }
+        });
+
+        // Auto-focus effect
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('stockSearch').focus();
+        });
+
+        // Smooth animation for the search button
+        document.querySelector('.search-btn').addEventListener('click', function() {
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 150);
+        });
+    </script>
+    <script src="/scripts/menu.js"></script>    
+</body>
+</html>
